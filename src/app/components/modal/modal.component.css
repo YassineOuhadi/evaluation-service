@@ -1,0 +1,524 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../../../../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../../../../node_modules/@syncfusion/ej2-angular-navigations/styles/material.css";
+@import "../../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+
+  *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  *:not(mat-icon) {
+    font-family: Lato,Helvetica,Arial,sans-serif !important;
+    font-style: normal;
+  }
+
+  .rtl {
+    direction: rtl;
+    text-align: right;
+  }
+
+  body {
+    background: #007bff;
+  }
+
+  ::selection {
+    color: #fff;
+    background: #007bff;
+  }
+  input[type="checkbox"], input[type="radio"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  *, ::after, ::before {
+    box-sizing: border-box;
+  }
+
+  a:active, a:hover {
+    color: #2b4b52 !important;
+  }
+
+  a {
+    color: #3c6974 !important;
+    text-decoration: none !important;
+    font-family: Open Sans,sans-serif !important;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  .invalid {
+    color: red !important;
+  }
+
+  .card-container {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .card-content {
+    padding: 20px 0px 0px 0px;
+  }
+  
+  .card-body {
+    display: flex;
+    align-items: center;
+  }
+
+  .card-image {
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  
+  .card-image img {
+    height: 65px;
+  }
+  
+  .card-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card-text h4 {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .card-text p.small-text {
+    font-size: 14px;
+    color: gray;
+    margin-top: auto;
+  }
+  
+  .card-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+  
+
+  
+  .title-text {
+    flex: 1;
+    display: inline-flex;
+  }
+  
+  .header-icon {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .input-container {
+    margin-bottom: 20px; 
+  }
+  
+  .input-content {
+    position: relative;
+    padding: 20px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+  
+  .input-head {
+    margin: 0;
+    padding: 10px 24px;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    border-radius: 4px;
+  }
+
+  .options .input-head {
+    justify-content: space-between;
+  }
+  
+  .option-header {
+    display: flex;
+    align-items: center;
+  }
+  
+  .option-title {
+    margin-left: 8px; /* Adjust the margin as needed */
+  }
+  
+  .remove-option {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+
+  .remove-option:hover {
+    opacity: 1;
+  }
+  
+  .input-head.main {
+    background: #1F1F1FC4;
+    color: #fff;
+  }
+  
+  .input-head.opt {
+    background: #f5f5f5;
+    border: 1px solid lightgray;
+    color: #000;
+  }
+  
+  .input-head.media {
+    background: #747275;
+    color: #fff;
+  }
+  
+  .modal-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+  }
+  
+
+  
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  
+  /* tree */
+  .tree-container {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .tree-container::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+  }
+  
+  .tree-container:hover {
+    border: 2px solid rgba(0, 0, 0, 0.87);
+  }
+  
+  .tree-container:hover::before {
+    border: 1px solid transparent;
+  }
+  
+  .tree-title {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: white;
+    padding: 0 5px;
+    font-size: 14px;
+  }
+  
+  .custom-tree {
+    padding: 20px 20px 0px 20px;
+  }
+  /* tree*/
+  
+  .word-preview-container {
+    position: relative;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    width: 100%;
+  }
+  
+  .word-preview-container.hidden {
+    display: none;
+  }
+  
+  .word-preview {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .word-preview span {
+    padding: 1px;
+    margin: 2px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.2s ease-in-out;
+    border: 1px solid #00000000;
+    padding: 4px 10px;
+  }
+  
+  .word-preview span.highlighted {
+    background-color: transparent;
+    color: #369;
+    border: 1px solid #369;
+    border-radius: 4px;
+  }
+  
+  .toggle-preview-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: #ccc;
+    border-radius: 50%;
+    z-index: 1;
+  }
+  
+  .preview-container {
+    display: flex;
+    position: relative;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+  
+  .preview-icon {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: #ccc;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 1;
+    width: 35px;
+    height: 35px;
+  }
+  
+  [mat-dialog-title] {
+    padding: 20px 24px !important;
+    height: 60px;
+    background: #1F1F1F;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    animation: slideToTop 0.5s forwards;
+    align-items: center;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  
+  [mat-dialog-content] {
+    margin: 0px;
+    padding: 0px;
+    max-height: fit-content;
+  }
+  
+  .mat-expansion-panel-header {
+    padding: 30px 24px 30px 24px;
+    height: auto;
+  }
+  
+  .mat-expansion-panel-content {
+    padding: 24px;
+  }
+  
+  .mat-mdc-form-field + .mat-mdc-form-field {
+    margin-left: 8px;
+    display: block;
+  }
+  
+  .mat-form-field {
+    display: block;
+    width: 100%;
+  }
+  
+  .checkbox {
+    margin: 0px 0px 20px 0px;
+  }
+  
+  mat-icon {
+    font-size: 24px;
+  }
+  
+  ::ng-deep .mat-tab-label {
+    padding: 30px !important;
+  }
+  
+  ::ng-deep .mat-dialog-container {
+    padding: 0 !important;
+    border-radius: 0px;
+  }
+  
+  ::ng-deep .mat-checkbox-ripple .mat-ripple-element {
+    background-color: #369 !important;
+  }
+  
+  ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+    background-color: #369 !important;
+  }
+  
+  ::ng-deep .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    border-radius: 5px !important;
+    background-color: #369 !important;
+  }
+  
+  :host ::ng-deep .mat-progress-spinner circle, .mat-spinner circle {   
+    stroke: #fff;
+  }
+  
+  :host ::ng-deep .ngx-spinner {
+    display: none !important;
+  }
+  
+/*  :host ::ng-deep .mat-step-header:hover:not([aria-disabled]), .mat-step-header:hover[aria-disabled="false"] {
+    background-color: transparent !important;
+  }*/
+  
+  ::ng-deep .mat-step-header[aria-labelledby="disabled_Resi"] {
+    pointer-events: none !important;
+    cursor: not-allowed;
+  }
+  
+  
+  
+  button.next_btn{
+    color: #000 !important;
+    cursor: pointer;
+    display: inline-block !important;
+    height: auto;
+    line-height: 1.1;
+    margin: 0;
+      margin-top: 0px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none !important;
+    text-shadow: none !important;
+    border-radius: 0;
+    vertical-align: middle;
+    font-size: 14px;
+    background-color: #fff;
+    border: none;
+    box-shadow: none !important;
+    font-weight: 500;
+    text-transform: none;
+    border: 2px solid #b9b8b8 !important;
+    font-weight: 600 !important;
+    background-color: #5f7d4f !important;
+    border-bottom: none !important;
+    border: none !important;
+    color: #fff !important;
+    border: 1px solid #5f7d4f !important;
+    font-family: Lato,sans-serif !important;
+    font-style: normal;
+    transition: color .3s,background-color .2s;
+    -moz-transition: color .3s,background-color .2s;
+    -webkit-transition: color .3s,background-color .2s;
+  }
+  
+  button.exit_btn {
+    color: #000 !important;
+    cursor: pointer;
+    display: inline-block !important;
+    height: auto;
+    line-height: 1.1;
+    margin: 0;
+    margin-left: 0px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none !important;
+    text-shadow: none !important;
+    border-radius: 0;
+    vertical-align: middle;
+    font-size: 14px;
+    background-color: #fff;
+    border: none;
+    box-shadow: none !important;
+    font-weight: 500;
+    text-transform: none;
+    border: 1px solid #b9b8b8 !important;
+    font-family: Lato,sans-serif !important;
+    font-style: normal;
+    font-weight: 600 !important;
+    transition: color .3s,background-color .2s;
+    -moz-transition: color .3s,background-color .2s;
+    -webkit-transition: color .3s,background-color .2s;
+  }
+
+  button[disabled=disabled], button:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+    pointer-events: none !important;
+  }
+
+
+  
+:host ::ng-deep .mat-step-header{
+  margin-inline: 24px;
+  height: 50px;
+  width: 100%;
+  
+  background-color: white;
+  border-radius: 32px;
+  width: 100%;
+  font-weight: 10px;
+  border: 1px solid lightgray;
+  
+}
+:host ::ng-deep .mat-step-header .mat-step-icon-selected{
+  background-color: #1F1F1F;
+  color: white;
+}
+:host ::ng-deep .mat-step-header .mat-step-icon-state-done {
+  background-color: #1F1F1F;
+  color: white;
+}
+:host ::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: #1F1F1F;
+  color: white;
+}
+    
+    
+::ng-deep .mat-step-header[aria-selected="true"]  {
+  background: #f5f5f5;
+  border: 1px solid lightgray;
+  border-radius: 32px;
+  width: 100%;
+  font-weight: 10px;
+}
+::ng-deep .mat-step-header[aria-selected="true"]  .mat-step-label.mat-step-label-active{
+   color: #000;
+}
+::ng-deep .mat-step-header[aria-selected="true"] .mat-step-icon-selected {
+  background-color: #1F1F1F;
+  color: white;
+}
+
+::ng-deep .mat-step-header[aria-selected="true"] .mat-step-icon-state-done {
+  background-color: #1F1F1F;
+  color: white;
+}
+
+::ng-deep .mat-step-header[aria-selected="true"] .mat-step-icon-state-edit {
+  background-color: #1F1F1F;
+  color: white;
+}
+::ng-deep .mat-step-header[aria-selected="true"]:hover  {
+  background: #f5f5f5;
+}
+
+
+
+
+
+::ng-deep .mat-step-header .mat-step-optional {
+    font-size: 12px;
+    padding-left: 8px;
+}
+::ng-deep .mat-error {
+    text-align: end;
+}

@@ -1,0 +1,142 @@
+[
+    {
+        "question": {
+            "id": 31,
+            "code": "FRFB1",
+            "text": "Confidentiality, Integrity, and Availability form what is often referred to as the **CIA triad**.",
+            "correctAnswerTipText": "Explanation: Confidentiality, Integrity, and Availability form what is often referred to as the CIA triad.",
+            "incorrectAnswerTipText": "Explanation: Confidentiality, Integrity, and Availability form what is often referred to as the CIA triad.",
+            "subLanguages": [
+                {
+                    "id": 8,
+                    "name": "France French"
+                },
+                {
+                    "id": 9,
+                    "name": "Canadian French"
+                },
+                {
+                    "id": 10,
+                    "name": "Belgian French"
+                }
+            ],
+            "dragWords": false
+        },
+        "type": "FILL_BLANKS"
+    },
+    {
+        "question": {
+            "id": 32,
+            "code": "FRSC1",
+            "text": "What is Cyber Security?",
+            "correctAnswerTipText": "Correct answer, cyber Security provides security to a system against cyber-attacks by using various technologies, and processes.",
+            "incorrectAnswerTipText": "Incorrect answer, cyber Security provides security to a system against cyber-attacks by using various technologies, and processes.",
+            "subLanguages": [
+                {
+                    "id": 8,
+                    "name": "France French"
+                },
+                {
+                    "id": 9,
+                    "name": "Canadian French"
+                },
+                {
+                    "id": 10,
+                    "name": "Belgian French"
+                }
+            ],
+            "options": [
+                {
+                    "id": 34,
+                    "text": "1- Cyber Security provides security against malware",
+                    "correct": false
+                },
+                {
+                    "id": 35,
+                    "text": "2- Cyber Security provides security against cyber-terrorists",
+                    "correct": false
+                },
+                {
+                    "id": 36,
+                    "text": "3- Cyber Security protects a system from cyber attacks",
+                    "correct": false
+                },
+                {
+                    "id": 37,
+                    "text": "4- All of the mentioned",
+                    "correct": true
+                }
+            ],
+            "multipleChoice": false
+        },
+        "type": "CHOICE"
+    },
+    {
+        "question": {
+            "id": 33,
+            "code": "FRMC1",
+            "text": "What is Cyber Security?",
+            "correctAnswerTipText": "Correct answer, cyber Security provides security to a system against cyber-attacks by using various technologies, and processes.",
+            "incorrectAnswerTipText": "Incorrect answer, cyber Security provides security to a system against cyber-attacks by using various technologies, and processes.",
+            "subLanguages": [
+                {
+                    "id": 8,
+                    "name": "France French"
+                }
+            ],
+            "options": [
+                {
+                    "id": 38,
+                    "text": "1- Cyber Security provides security against malware",
+                    "correct": true
+                },
+                {
+                    "id": 39,
+                    "text": "2- Cyber Security provides security against malware",
+                    "correct": true
+                },
+                {
+                    "id": 40,
+                    "text": "3- Cyber Security protects a system from cyber attacks",
+                    "correct": true
+                }
+            ],
+            "multipleChoice": true
+        },
+        "type": "CHOICE"
+    },
+    {
+        "question": {
+            "id": 34,
+            "code": "FRDW1",
+            "text": "Confidentiality, Integrity, and **Availability** form what is often referred to as the **CIA triad**.",
+            "correctAnswerTipText": "Explanation: Confidentiality, Integrity, and Availability form what is often referred to as the CIA triad.",
+            "incorrectAnswerTipText": "Explanation: Confidentiality, Integrity, and Availability form what is often referred to as the CIA triad.",
+            "subLanguages": [
+                {
+                    "id": 8,
+                    "name": "France French"
+                }
+            ],
+            "dragWords": true
+        },
+        "type": "FILL_BLANKS"
+    },
+    {
+        "question": {
+            "id": 7,
+            "code": "FRDW1",
+            "text": "Confidentiality, Integrity, and Availability form what is often referred to as the **CIA triad**.",
+            "correctAnswerTipText": "Explanation: Confidentiality, Integrity, and Availability form what is often referred to as the CIA triad.",
+            "incorrectAnswerTipText": "Explanation: Confidentiality, Integrity, and Availability form what is often referred to as the CIA triad.",
+            "subLanguages": [
+                {
+                    "id": 8,
+                    "name": "France French"
+                }
+            ],
+            "correct": false
+        },
+        "type": "TRUE_FALSE"
+    }
+]
