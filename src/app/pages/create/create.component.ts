@@ -64,8 +64,8 @@ interface Course {
 
 @Component({
   selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.css'],
+  templateUrl: './create.component.html',
+  styleUrls: ['./create.component.css'],
   animations: [
     trigger('fadeInOut', [
       state('void', style({ opacity: 0 })),

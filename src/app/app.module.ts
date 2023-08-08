@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { QuizAppComponent } from './pages/quiz/quiz.component';
 import { NewQueComponent } from './pages/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatIconModule} from '@angular/material/icon'
@@ -13,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
 import {MatExpansionModule} from '@angular/material/expansion';
-import { YourModalComponent } from './components/modal/modal.component';
+import { YourModalComponent } from './pages/create/create.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {MatSelectModule} from '@angular/material/select';
@@ -34,7 +33,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {MatStepperModule} from '@angular/material/stepper';
 
 import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule} from '@angular/material/tree';
-import { PlayQuizComponent } from './play-quiz/play-quiz.component';
+import { PlayQuizComponent } from './pages/play/play-quiz.component';
 
 import {MatGridListModule} from '@angular/material/grid-list';
 
@@ -43,7 +42,6 @@ import {MatGridListModule} from '@angular/material/grid-list';
   entryComponents: [YourModalComponent],
   declarations: [
     AppComponent,
-    QuizAppComponent,
     NewQueComponent,
     YourModalComponent,
     PlayQuizComponent

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { ApiService } from '../new-que.service';
+import { ApiService } from '../../new-que.service';
 import { ActivatedRoute } from '@angular/router';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
