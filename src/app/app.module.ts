@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
 import {MatExpansionModule} from '@angular/material/expansion';
-import { YourModalComponent } from './pages/create/create.component';
+import { CreateComponent } from './pages/create/create.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {MatSelectModule} from '@angular/material/select';
@@ -33,18 +33,20 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {MatStepperModule} from '@angular/material/stepper';
 
 import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule} from '@angular/material/tree';
-import { PlayQuizComponent } from './pages/play/play-quiz.component';
+import { PlayComponent } from './pages/play/play.component';
 
 import {MatGridListModule} from '@angular/material/grid-list';
+import { QuestionsComponent } from './pages/questions/questions.component';
 
 
 @NgModule({
-  entryComponents: [YourModalComponent],
+  entryComponents: [CreateComponent],
   declarations: [
     AppComponent,
     NewQueComponent,
-    YourModalComponent,
-    PlayQuizComponent
+    CreateComponent,
+    PlayComponent,
+    QuestionsComponent
   ],
   imports: [
     BrowserModule,

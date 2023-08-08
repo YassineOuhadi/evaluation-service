@@ -72,9 +72,9 @@ interface SelectedBlockInfo {
 }
 
 @Component({
-  selector: 'app-play-quiz',
-  templateUrl: './play-quiz.component.html',
-  styleUrls: ['./play-quiz.component.css'],
+  selector: 'app-quiz-play',
+  templateUrl: './play.component.html',
+  styleUrls: ['./play.component.css'],
   animations: [
     trigger('fadeInOut', [
       state('void', style({ opacity: 0 })),
@@ -94,7 +94,7 @@ interface SelectedBlockInfo {
   ]
 })
 
-export class PlayQuizComponent implements OnInit{
+export class PlayComponent implements OnInit{
 
   onClickTitle() {}
   currentLanguage = 'en';

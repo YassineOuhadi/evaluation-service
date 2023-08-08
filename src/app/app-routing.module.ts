@@ -1,8 +1,10 @@
 import { Component, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NewQueComponent } from './pages/home/home.component';
-import { YourModalComponent } from './pages/create/create.component';
-import { PlayQuizComponent } from './pages/play/play-quiz.component';
+import { CreateComponent } from './pages/create/create.component';
+import { PlayComponent } from './pages/play/play.component';
+import { QuestionsComponent } from './pages/questions/questions.component';
+
 
 const routes: Routes = [
   {
@@ -10,12 +12,16 @@ const routes: Routes = [
     component: NewQueComponent
   },
   {
+    path: 'questions',
+    component:QuestionsComponent
+  },
+  {
     path: 'create',
-    component:YourModalComponent
+    component:CreateComponent
   },
   {
     path: 'play',
-    component: PlayQuizComponent
+    component: PlayComponent
   }
 ];
 

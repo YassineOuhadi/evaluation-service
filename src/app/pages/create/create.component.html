@@ -22,7 +22,7 @@
       <mat-horizontal-stepper [selectedIndex]="currentStepIndex"
   (selectionChange)="onStepChanged($event.selectedIndex)" linear>
 
-        <mat-step> <!-- [completed]="isLanguageValid()" -->
+        <mat-step [completed]="isLanguageValid()"> <!-- [completed]="isLanguageValid()" -->
           <div class="pt-4">
             <ng-template matStepLabel><span class="px-2">{{ content.step.label.language[this.currentLanguage] }}</span></ng-template>
             <mat-card class="shadow-md p-4" [@fadeInOut]>
@@ -48,7 +48,7 @@
           </div>
         </mat-step>
 
-        <mat-step> <!-- [completed]="validateQue()" -->
+        <mat-step [completed]="validateQue()"> <!-- [completed]="validateQue()" -->
           <div class="pt-4">
             <ng-template matStepLabel><span class="px-2">{{ content.step.label.question[this.currentLanguage] }}</span></ng-template>
             <mat-accordion mat-accordion>

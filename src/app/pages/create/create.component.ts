@@ -63,7 +63,7 @@ interface Course {
 }
 
 @Component({
-  selector: 'app-modal',
+  selector: 'app-question-new',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css'],
   animations: [
@@ -84,7 +84,7 @@ interface Course {
   ]
 })
 
-export class YourModalComponent implements OnInit {
+export class CreateComponent implements OnInit {
 
   /* Init */
   currentLanguage = 'en';
