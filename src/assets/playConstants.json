@@ -196,6 +196,11 @@
           "en": "Replay Quiz",
           "fr": "Rejouer au quiz",
           "ar": "إعادة الاختبار"
+        },
+        "validate": {
+          "en": "Validate",
+          "fr": "Valider",
+          "ar": "التحقق"
         }
     }
   }  

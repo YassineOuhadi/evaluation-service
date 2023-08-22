@@ -1,1 +1,201 @@
-<p>questions works!</p>
+<div [style.direction]="getLayoutDirection()">
+<h3 mat-dialog-title class="m-0" style="display: flex;">
+  <div class="title-text" style="">  
+    <span><h3 style="margin: 0px;font-size: 14px;">{{ content.header.title[this.currentLanguage] }}</h3></span>
+  </div>
+  <button type="button" class="next_btn rounded" (click)="createQuestion()" [@fadeInOut]>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <rect fill="#fff" x="4" y="11" width="16" height="2" rx="1"/>
+          <rect fill="#fff" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-270.000000) translate(-12.000000, -12.000000) " x="4" y="11" width="16" height="2" rx="1"/>
+      </g>
+  </svg>
+  &nbsp; 
+  {{ content.header.button[this.currentLanguage] }}</button>
+</h3>
+<div mat-dialog-content>
+  <div class="loading-bar" *ngIf="isLoading">
+    <ngx-loading-bar></ngx-loading-bar>
+  </div>
+  <div class="card-container">
+    <div class="card-content">
+      <div class="filter-section">
+
+        <!-- Question code Filter -->
+        <label [ngClass]="{ 'right': !rightToLeft() }">Qusetion/Code</label>
+        <mat-form-field class="search-input" [ngClass]="{ 'rtl': !rightToLeft() }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+          <mat-label>Qusetion/Code</mat-label>
+            <input type="text" matInput [(ngModel)]="questionCodeFilter"/>
+        </mat-form-field>
+
+        <!-- Question language Filter -->
+        <label [ngClass]="{ 'right': !rightToLeft() }">{{ content.filter.choiceLanguage[this.currentLanguage] }}</label>
+        <mat-form-field class="search-input" [ngClass]="{ 'rtl': !rightToLeft() }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+          <mat-label>{{ content.filter.language[this.currentLanguage] }}</mat-label>
+            <input type="text" matInput [formControl]="languageControl" [matAutocomplete]="autoLanguage"/>
+            <mat-autocomplete #autoLanguage="matAutocomplete" [displayWith]="displayLanguageName">
+              <mat-option *ngFor="let language of filteredLanguages | async" [value]="language">
+                {{ language.name }}
+              </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <!-- Question Type Filter -->
+        <label [ngClass]="{ 'right': !rightToLeft() }">{{ content.filter.choiceType[this.currentLanguage] }}</label>
+        <mat-form-field [ngClass]="{ 'rtl': !rightToLeft() }" [appearance]="rightToLeft() ? 'outline' : 'fill'" class="search-input">
+          <mat-label>{{ content.filter.type[this.currentLanguage] }}</mat-label>
+          <input matInput [formControl]="typeControl"   [matAutocomplete]="autoType" />
+            <mat-autocomplete #autoType="matAutocomplete" >
+              <mat-option *ngFor="let questionType of questionTypes" [value]="questionType">
+                {{ questionType | titlecase }}
+              </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!-- Course Filter -->
+        <label [ngClass]="{ 'right': !rightToLeft() }">{{ content.filter.choiceCourse[this.currentLanguage] }}</label>
+        <mat-form-field class="search-input" [ngClass]="{ 'rtl': !rightToLeft() }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+          <mat-label>{{ content.filter.course[this.currentLanguage] }}</mat-label>
+            <input type="text" matInput [formControl]="courseControl" [matAutocomplete]="autoCourse"/>
+            <mat-autocomplete #autoCourse="matAutocomplete" [displayWith]="displayCourseName">
+              <mat-option *ngFor="let course of filteredCourses | async" [value]="course">
+                {{ course.name }}
+              </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="filter-section buttons">
+        <button mat-button color="primary" class="mx-2 px-2" (click)="resetFilters()">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <rect x="0" y="0" width="24" height="24"/>
+                <path d="M8.43296491,7.17429118 L9.40782327,7.85689436 C9.49616631,7.91875282 9.56214077,8.00751728 9.5959027,8.10994332 C9.68235021,8.37220548 9.53982427,8.65489052 9.27756211,8.74133803 L5.89079566,9.85769242 C5.84469033,9.87288977 5.79661753,9.8812917 5.74809064,9.88263369 C5.4720538,9.8902674 5.24209339,9.67268366 5.23445968,9.39664682 L5.13610134,5.83998177 C5.13313425,5.73269078 5.16477113,5.62729274 5.22633424,5.53937151 C5.384723,5.31316892 5.69649589,5.25819495 5.92269848,5.4165837 L6.72910242,5.98123382 C8.16546398,4.72182424 10.0239806,4 12,4 C16.418278,4 20,7.581722 20,12 C20,16.418278 16.418278,20 12,20 C7.581722,20 4,16.418278 4,12 L6,12 C6,15.3137085 8.6862915,18 12,18 C15.3137085,18 18,15.3137085 18,12 C18,8.6862915 15.3137085,6 12,6 C10.6885336,6 9.44767246,6.42282109 8.43296491,7.17429118 Z" fill="#1E90FF" fill-rule="nonzero"/>
+            </g>
+          </svg>
+          &nbsp;
+          {{ content.filter.resetFilters[this.currentLanguage] }}</button>
+        <button mat-button color="warn" class="mx-2 px-2" (click)="applyFilter()">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <rect x="0" y="0" width="24" height="24"/>
+                <rect fill="#f44336" x="4" y="5" width="16" height="3" rx="1.5"/>
+                <path d="M7.5,11 L16.5,11 C17.3284271,11 18,11.6715729 18,12.5 C18,13.3284271 17.3284271,14 16.5,14 L7.5,14 C6.67157288,14 6,13.3284271 6,12.5 C6,11.6715729 6.67157288,11 7.5,11 Z M10.5,17 L13.5,17 C14.3284271,17 15,17.6715729 15,18.5 C15,19.3284271 14.3284271,20 13.5,20 L10.5,20 C9.67157288,20 9,19.3284271 9,18.5 C9,17.6715729 9.67157288,17 10.5,17 Z" fill="#f44336" opacity="0.3"/>
+            </g>
+          </svg>
+          &nbsp;
+        {{ content.filter.applyFilters[this.currentLanguage] }}</button>
+      </div>
+      <div  style="padding-top: 20px;">
+        <table mat-table [ngClass]="rightToLeft()? 'left': 'right'" [dataSource]="dataSource" matSort>
+
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+    [checked]="[selection.hasValue() && isAllSelected()"
+    [indeterminate]="selection.hasValue() && !isAllSelected()"
+    (click)="toggleAllSelection()"
+  ></mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+    (click)="$event.stopPropagation()"
+    (change)="selection.toggle(row)"
+    [checked]="selection.isSelected(row)"
+  ></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Code Column -->
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{ 'rtl': !rightToLeft() }"> {{ content.table.code[this.currentLanguage] }} </th>
+            <td mat-cell *matCellDef="let questionObj"> {{ questionObj.question.code }} </td>
+          </ng-container>
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{ 'rtl': !rightToLeft() }"> {{ content.filter.type[this.currentLanguage] }} </th>
+            <td mat-cell *matCellDef="let questionObj"> {{ questionObj.type }} </td>
+          </ng-container>
+          <!-- Question Text Column -->
+          <ng-container matColumnDef="text">
+            <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'rtl': !rightToLeft() }"> {{ content.table.question[this.currentLanguage] }} </th>
+            <td mat-cell *matCellDef="let questionObj"> {{ questionObj.question.text }} </td>
+          </ng-container>
+          <!-- Courses Column -->
+          <ng-container matColumnDef="courses">
+            <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'rtl': !rightToLeft() }"> {{ content.table.courses[this.currentLanguage] }} </th>
+              <td mat-cell *matCellDef="let questionObj">
+                <mat-chip-list>
+                  <mat-chip *ngFor="let course of questionObj.question.courses" color="primary">{{ course.name }}</mat-chip>
+                </mat-chip-list>
+              </td>
+          </ng-container>
+          <!-- Play Column -->
+          <ng-container matColumnDef="play">
+            <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'rtl': !rightToLeft() }">
+              {{ content.table.play[this.currentLanguage] }} </th>
+            <td mat-cell *matCellDef="let questionObj">
+              <button mat-icon-button color="primary" (click)="playQuestion(questionObj)">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <rect x="0" y="0" width="24" height="24"/>
+                      <path d="M3,12 C3,12 5.45454545,6 12,6 C16.9090909,6 21,12 21,12 C21,12 16.9090909,18 12,18 C5.45454545,18 3,12 3,12 Z" fill="#1E90FF" fill-rule="nonzero" opacity="0.3"/>
+                      <path d="M12,15 C10.3431458,15 9,13.6568542 9,12 C9,10.3431458 10.3431458,9 12,9 C13.6568542,9 15,10.3431458 15,12 C15,13.6568542 13.6568542,15 12,15 Z" fill="#1E90FF" opacity="0.3"/>
+                  </g>
+                </svg>
+              </button>
+            </td>
+          </ng-container>
+          <!-- Edit Column -->
+          <ng-container matColumnDef="edit">
+            <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'rtl': !rightToLeft() }"> {{ content.table.edit[this.currentLanguage] }} </th>
+            <td mat-cell *matCellDef="let questionObj">
+              <button mat-icon-button color="#5f7d4f" style="border: 1px solid #5f7d4f;" (click)="editQuestion(questionObj)">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <rect x="0" y="0" width="24" height="24"/>
+                      <path d="M8,17.9148182 L8,5.96685884 C8,5.56391781 8.16211443,5.17792052 8.44982609,4.89581508 L10.965708,2.42895648 C11.5426798,1.86322723 12.4640974,1.85620921 13.0496196,2.41308426 L15.5337377,4.77566479 C15.8314604,5.0588212 16,5.45170806 16,5.86258077 L16,17.9148182 C16,18.7432453 15.3284271,19.4148182 14.5,19.4148182 L9.5,19.4148182 C8.67157288,19.4148182 8,18.7432453 8,17.9148182 Z" fill="#5f7d4f" fill-rule="nonzero" transform="translate(12.000000, 10.707409) rotate(-135.000000) translate(-12.000000, -10.707409) "/>
+                      <rect fill="#5f7d4f" opacity="0.3" x="5" y="20" width="15" height="2" rx="1"/>
+                  </g>
+              </svg>
+              </button>
+            </td>
+          </ng-container>
+          <!-- Delete Column -->
+          <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'rtl': !rightToLeft() }"> {{ content.table.delete[this.currentLanguage] }} </th>
+            <td mat-cell *matCellDef="let questionObj">
+              <button mat-icon-button color="warn" (click)="deleteQuestion(questionObj)">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <rect x="0" y="0" width="24" height="24"/>
+                      <path d="M6,8 L18,8 L17.106535,19.6150447 C17.04642,20.3965405 16.3947578,21 15.6109533,21 L8.38904671,21 C7.60524225,21 6.95358004,20.3965405 6.89346498,19.6150447 L6,8 Z M8,10 L8.45438229,14.0894406 L15.5517885,14.0339036 L16,10 L8,10 Z" fill="#f44336" fill-rule="nonzero"/>
+                      <path d="M14,4.5 L14,3.5 C14,3.22385763 13.7761424,3 13.5,3 L10.5,3 C10.2238576,3 10,3.22385763 10,3.5 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z" fill="#f44336" opacity="0.3"/>
+                  </g>
+              </svg>
+              </button>
+            </td>
+          </ng-container>
+          <!-- Header and Row Definitions -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let questionObj; columns: displayedColumns;"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="8">
+              {{ content.table.noDataMatchingFilters[this.currentLanguage] }}
+              {{ content.filter.language[this.currentLanguage] }} - '{{ this.languageControl.value  }}',
+              {{ content.filter.type[this.currentLanguage] }} - '{{ this.typeControl.value }}',
+              {{ content.filter.course[this.currentLanguage] }} - '{{ this.courseControl.value }}'
+            </td>
+          </tr>
+        </table>
+        <mat-paginator
+          [length]="totalItems"
+          [pageIndex]="pageIndex"
+          [pageSize]="pageSize"
+          [showFirstLastButtons]="true"
+          [pageSizeOptions]="[5, 10, 25, 100]"
+          (page)="onPageChange($event)"
+          aria-label="Select page of questions">
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

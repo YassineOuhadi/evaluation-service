@@ -1,0 +1,79 @@
+
+<div class="center-container" [style.direction]="getLayoutDirection()">
+  <div mat-dialog-content class="flex-container">
+    <div class="card-container">
+      <mat-card class="shadow-md box p-0">
+        <mat-card-content>   
+
+          <header [@slideDownUp]>
+            <div class="title">{{ content.table.confirmDeleteLabel[this.currentLanguage] }}</div>
+            <mat-icon class="close-icon" (click)="closeDialog()" style="color: white;cursor: pointer;">close</mat-icon>
+          </header>
+
+          <section>
+
+            <!-- Case 1: Delete specific courses -->
+            <ng-container *ngIf="selectedCourses.length !== data.question.courses.length && data.question.courses.length !== 0; else deleteCoursesTemplate">
+              <mat-dialog-content>
+                <p>{{ content.table.deleteQuestionConfirmation[this.currentLanguage] }}</p>
+                <div class="course-list">
+                  <div *ngFor="let course of data.question.courses">
+                    <mat-checkbox [checked]="selectedCourses.includes(course.id)" (change)="toggleCourse(course.id)">
+                     <label class="mx-2">{{ course.name }}</label>
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </mat-dialog-content>
+              <br>
+              <mat-dialog-actions align="end">
+                <button mat-button mat-dialog-close color="primary" class="px-2 mx-2">{{ content.table.cancel[this.currentLanguage] }}</button>
+                <button mat-button  
+                        [mat-dialog-close]="{ confirmed: true, deleteCourses: selectedCourses,deleteQuestion: false }" 
+                        color="warn" class="px-2 mx-2" [disabled]="selectedCourses.length === 0">
+                  {{ content.table.confirm[this.currentLanguage] }}
+                </button>
+              </mat-dialog-actions>
+            </ng-container>
+
+            <!-- Case 2: Confirm courses deletion -->
+            <ng-template #deleteCoursesTemplate>
+
+              <ng-container *ngIf="!confirmedDeleteCourses; else confirmDeleteQuestionTemplate">
+                <p>{{ content.table.deleteQuestionConfirmation[this.currentLanguage] }}</p>
+                <div class="course-list">
+                  <div *ngFor="let course of data.question.courses">
+                    <mat-checkbox [checked]="selectedCourses.includes(course.id)" (change)="toggleCourse(course.id)">
+                      <label class="mx-2">{{ course.name }}</label>
+                    </mat-checkbox>
+                  </div>
+                </div>
+                <br>
+                <mat-dialog-actions align="end">
+                  <button mat-button mat-dialog-close color="primary" class="px-2 mx-2">{{ content.table.cancel[this.currentLanguage] }}</button>
+                  <button mat-button (click)="confirmCoursesDeletion()" color="warn" class="px-2 mx-2">{{ content.table.confirm[this.currentLanguage] }}</button>
+                </mat-dialog-actions>
+              </ng-container>
+
+              <ng-template #confirmDeleteQuestionTemplate>
+                <p>{{ content.table.deleteQuestionPermanently[this.currentLanguage] }}</p>
+                <mat-dialog-actions align="end">
+                  <button mat-button 
+                          [mat-dialog-close]="{ confirmed: true, deleteCourses: selectedCourses, deleteQuestion: false }" 
+                          color="primary" class="px-2 mx-2">{{ content.table.close[this.currentLanguage] }}</button>
+                  <button mat-button 
+                          [mat-dialog-close]="{ confirmed: true, deleteCourses: selectedCourses, deleteQuestion: true }" 
+                          color="warn" class="px-2 mx-2">
+                    {{ content.table.deleteQuestionLabel[this.currentLanguage] }}
+                  </button>
+                </mat-dialog-actions>
+              </ng-template>
+
+            </ng-template>
+
+          </section>
+         
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

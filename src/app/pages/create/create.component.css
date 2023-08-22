@@ -5,8 +5,8 @@
 @import "../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
 
   *{
-    margin: 0;
-    padding: 0;
+    /*margin: 0;
+    padding: 0;*/
     box-sizing: border-box;
   }
 
@@ -157,7 +157,8 @@
   }
   
   .input-head.main {
-    background: #1F1F1FC4;
+    /*background: #1F1F1FC4;*/
+    background: #1E90FF;
     color: #fff;
   }
   
@@ -263,8 +264,8 @@
   
   .word-preview span.highlighted {
     background-color: transparent;
-    color: #369;
-    border: 1px solid #369;
+    color: #1E90FF;
+    border: 1px solid #1E90FF;
     border-radius: 4px;
   }
   
@@ -296,11 +297,15 @@
     width: 35px;
     height: 35px;
   }
+
+  .preview-icon.right {
+    right: 10px;
+  }
   
   [mat-dialog-title] {
     padding: 20px 24px !important;
     height: 60px;
-    background: #1F1F1F;
+    background: #1E90FF;
     color: #fff;
     display: flex;
     justify-content: space-between;
@@ -355,16 +360,16 @@
   }
   
   ::ng-deep .mat-checkbox-ripple .mat-ripple-element {
-    background-color: #369 !important;
+    background-color: #1E90FF !important;
   }
   
   ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background {
-    background-color: #369 !important;
+    background-color: #1E90FF !important;
   }
   
   ::ng-deep .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
     border-radius: 5px !important;
-    background-color: #369 !important;
+    background-color: #1E90FF !important;
   }
   
   :host ::ng-deep .mat-progress-spinner circle, .mat-spinner circle {   
@@ -408,11 +413,11 @@
     text-transform: none;
     border: 2px solid #b9b8b8 !important;
     font-weight: 600 !important;
-    background-color: #5f7d4f !important;
+    background-color: #1E90FF !important;
     border-bottom: none !important;
     border: none !important;
     color: #fff !important;
-    border: 1px solid #5f7d4f !important;
+    border: 1px solid #1E90FF !important;
     font-family: Lato,sans-serif !important;
     font-style: normal;
     transition: color .3s,background-color .2s;
@@ -459,11 +464,10 @@
   
 :host ::ng-deep .mat-step-header{
   margin-inline: 24px;
-  height: 50px;
+  height: 42px;
   width: 100%;
-  
   background-color: white;
-  border-radius: 32px;
+  border-radius: 5px;
   width: 100%;
   font-weight: 10px;
   border: 1px solid lightgray;
@@ -484,18 +488,18 @@
     
     
 ::ng-deep .mat-step-header[aria-selected="true"]  {
-  background: #f5f5f5;
-  border: 1px solid lightgray;
-  border-radius: 32px;
+  background: #1E90FF;
+  border: 1px solid #1E90FF;
+  border-radius: 5px;
   width: 100%;
   font-weight: 10px;
 }
 ::ng-deep .mat-step-header[aria-selected="true"]  .mat-step-label.mat-step-label-active{
-   color: #000;
+   color: #fff;
 }
 ::ng-deep .mat-step-header[aria-selected="true"] .mat-step-icon-selected {
-  background-color: #1F1F1F;
-  color: white;
+  background-color: #fff;
+  color: #1E90FF;
 }
 
 ::ng-deep .mat-step-header[aria-selected="true"] .mat-step-icon-state-done {
@@ -508,7 +512,7 @@
   color: white;
 }
 ::ng-deep .mat-step-header[aria-selected="true"]:hover  {
-  background: #f5f5f5;
+  background-color: #1E90FF;
 }
 
 

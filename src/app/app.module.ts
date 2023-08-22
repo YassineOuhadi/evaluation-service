@@ -13,7 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { CreateComponent } from './pages/create/create.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
@@ -28,7 +28,7 @@ import {NgFor, AsyncPipe} from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { TreeViewModule } from '@syncfusion/ej2-angular-navigations';
 import {MatTabsModule} from '@angular/material/tabs';
-
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {FormBuilder, Validators} from '@angular/forms';
 import {MatStepperModule} from '@angular/material/stepper';
 
@@ -39,6 +39,12 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import { QuestionsComponent } from './pages/questions/questions.component';
 
 
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { PlayModalComponent } from './components/play-modal/play-modal.component';
+import {MatChipsModule} from '@angular/material/chips';
 @NgModule({
   entryComponents: [CreateComponent],
   declarations: [
@@ -46,7 +52,9 @@ import { QuestionsComponent } from './pages/questions/questions.component';
     NewQueComponent,
     CreateComponent,
     PlayComponent,
-    QuestionsComponent
+    QuestionsComponent,
+    ConfirmationDialogComponent,
+    PlayModalComponent
   ],
   imports: [
     BrowserModule,
@@ -90,9 +98,14 @@ import { QuestionsComponent } from './pages/questions/questions.component';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatGridListModule,MatIconModule
+    MatGridListModule,MatIconModule,
+
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,MatChipsModule
+
   ],
-  providers: [],
+  providers: [MatPaginatorIntl],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA] // Add the CUSTOM_ELEMENTS_SCHEMA here
 })

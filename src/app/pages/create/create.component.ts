@@ -9,20 +9,21 @@ import {map, startWith} from 'rxjs/operators';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Router } from '@angular/router';
-enum QuestionType {
-  TRUE_FALSE = "TRUE_FALSE",
-  CHOICE = "CHOICE",
-  FILL_BLANKS = "FILL_BLANKS",
-  MATCHING = "MATCHING"
-}
+import { ActivatedRoute } from '@angular/router';
 
-interface questionInfo {
-  name: string;
-  description: string;
-  image: string;
-};
+import { QuestionType, 
+         Option, 
+         Block, 
+         Course,
+         HiddenWord, 
+         QuestionObj, 
+         SelectedBlockInfo, 
+         Language, 
+         Exam
+       } from '../../interfaces';
 
 interface Question {
+  id?: number;
   type: QuestionType;
   code: string;
   text: string; 
@@ -37,29 +38,17 @@ interface Question {
     text: string;
     isCorrect: boolean
   }[];
+  /*language: {
+    id: number;
+    name: string;
+  };*/
 
   isWithTiming: boolean;
   duration?: number;
 }
 
-interface Block {
-  word: string;
-  specialCharacter?: string;
-  isSelected: boolean;
-}
-
 interface Text {
   blocks: Block[];
-}
-
-interface Language {
-  id: number;
-  name: string;
-}
-
-interface Course {
-  id: number;
-  name: string;
 }
 
 @Component({
@@ -89,6 +78,9 @@ export class CreateComponent implements OnInit {
   /* Init */
   currentLanguage = 'en';
   content: any;
+
+  isEditQuestion = false;
+  isValidateQuestion = false;
 
   loadingDuration = 2000;
   panelOpenState = false;
@@ -123,17 +115,31 @@ export class CreateComponent implements OnInit {
     private snackBar: MatSnackBar,
     private httpClient: HttpClient,
     private apiService: ApiService,private http: HttpClient,
-    private router: Router
+    private router: Router,
+      private route: ActivatedRoute
   ) {
 
     this.http.get("assets/modalConstants.json").subscribe((res:any)=>{
-      debugger;
+      //debugger;
       this.content = res;
     })
     
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+    const questionId = params['questionId'];
+    if(params['lang']) this.currentLanguage = params['lang'];
+    if (questionId) {
+      this.handleEditQuestion(questionId);
+    } else {
+      this.handleCreateQuestion();
+    }
+    });
+  }
+
+  private handleCreateQuestion() {
+
     this.questions = [
       {
         type: QuestionType.CHOICE,
@@ -208,6 +214,92 @@ export class CreateComponent implements OnInit {
 
   }
 
+  private handleEditQuestion(questionId: number) {
+    this.isEditQuestion = true;
+
+    this.apiService.findQuestion(questionId).subscribe(
+      (response) => {
+        console.log('Question:', response);
+      },
+      (e) => {
+        console.error('Error while sending data:', e.error.message);
+      }
+    );
+
+    this.apiService.findQuestion(questionId).subscribe(
+    (response: any) => {
+      const questionData = response.question;
+      let questionType = response.type as QuestionType;
+      var mappedQuestion: Question;
+
+      mappedQuestion = {
+        id: questionData.id,
+        type: questionType,
+        code: questionData.code,
+        text: questionData.text,
+        correctAnswerTipText: questionData.correctAnswerTipText,
+        incorrectAnswerTipText: questionData.incorrectAnswerTipText,
+        coursesIds: questionData.courses.map((course: Course) => course.id),
+        language_fk: questionData.language.id,
+        isWithTiming: questionData.withTiming,
+        duration: questionData.duration
+      };
+
+      if (questionType === QuestionType.CHOICE) {
+        mappedQuestion.isMultipleChoice = questionData.multipleChoice;
+        
+        mappedQuestion.options = questionData.options.map((option: any) => {
+          const optionText = option.text.replace(/^\d+\-\s*/, '');
+          return {
+            id: option.id,
+            text: optionText,
+            isCorrect: option.correct
+          };
+        });
+
+      }
+
+      else if (questionType === QuestionType.TRUE_FALSE) {
+        mappedQuestion.isCorrect = questionData.correct;
+      }
+
+       else if (questionType === QuestionType.FILL_BLANKS) {
+        mappedQuestion.isDragWords = questionData.dragWords;
+      }
+
+      console.log("mapped question", mappedQuestion);
+      
+      this.questions = [mappedQuestion];
+
+      this.isQteOpen = true;
+      this.activeQuestionType = questionType;
+
+      if(questionType === QuestionType.FILL_BLANKS) {
+        //ontextaria fct
+        this.questionTextContents[questionType] = questionData.text;
+        this.questionTextObj[questionType] = this.parseTextIntoBlocks(questionData.text);
+        this.updateWordPreview();
+      }
+
+      this.selectedCourses = questionData.courses.map((course: Course) => course.id);
+
+
+    },
+    (e) => {
+      console.error('Error while sending data:', e.error.message);
+    }
+    );
+
+    this.apiService.getCourses().subscribe(
+      (courses) => {
+        this.courses = courses;
+      },
+      (error) => {
+        console.error('Error while fetching courses:', error);
+      }
+    );
+  }
+
   isLanguageValid(): boolean {
     const selectedLanguage = this.languageControl.value;
     return !!selectedLanguage && this.languages.some(language => language.id === selectedLanguage.id);
@@ -223,18 +315,18 @@ export class CreateComponent implements OnInit {
     return language && language.name ? language.name : '';
   }
   
-  getQueType(question: Question): questionInfo {
-    let queType: questionInfo;
+  getQueType(question: Question): any {
+    let queInfo: any;
     switch (question.type) {
       case QuestionType.CHOICE:
         if(question.isMultipleChoice){
-          queType = {
+          queInfo = {
             name: this.content.questions.singleMultipleChoice.name[this.currentLanguage],
             description: this.content.questions.singleMultipleChoice.description[this.currentLanguage],
             image: 'multiple choice.png',
           };
         } else {
-          queType = {
+          queInfo = {
             name: this.content.questions.singleMultipleChoice.name[this.currentLanguage],
             description: this.content.questions.singleMultipleChoice.description[this.currentLanguage],
             image: 'single choice set.png',
@@ -242,7 +334,7 @@ export class CreateComponent implements OnInit {
         }
         break;
       case QuestionType.TRUE_FALSE:
-        queType = {
+        queInfo = {
           name: this.content.questions.trueFalseQuestion.name[this.currentLanguage],
           description: this.content.questions.trueFalseQuestion.description[this.currentLanguage],
           image: 'true false.png',
@@ -250,13 +342,13 @@ export class CreateComponent implements OnInit {
         break;
       case QuestionType.FILL_BLANKS:
         if( question.isDragWords){
-          queType = {
+          queInfo = {
             name: this.content.questions.dragAndFill.name[this.currentLanguage],
             description: this.content.questions.dragAndFill.description[this.currentLanguage],
             image: 'drag the words.png',
           };
         } else {
-          queType = {
+          queInfo = {
             name: this.content.questions.dragAndFill.name[this.currentLanguage],
             description: this.content.questions.dragAndFill.description[this.currentLanguage],
             image: 'fill in the blanks.png',
@@ -264,27 +356,27 @@ export class CreateComponent implements OnInit {
         }
         break;
         case QuestionType.MATCHING: 
-        queType = {
+        queInfo = {
           name: this.content.questions.matchingItems.name[this.currentLanguage],
           description: this.content.questions.matchingItems.description[this.currentLanguage],
           image: 'matching.png'
         };
         break;
       default:
-        queType = {
+        queInfo = {
           name: '',
           description: '',
           image: '',
         };
         break;
     }
-    return queType;
+    return queInfo;
   }
   /* Init */
 
   /* Display */
   exit(){
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/questions');
   }
   
   getLayoutDirection(): string {
@@ -316,6 +408,7 @@ export class CreateComponent implements OnInit {
   }  
 
   toggleQuestion(questionType: QuestionType): void {
+    if(this.isEditQuestion) return;
     if( this.activeQuestionType === questionType){
       this.isQteOpen = false;
       this.activeQuestionType = null;
@@ -326,6 +419,15 @@ export class CreateComponent implements OnInit {
   
   toggleMedia(questionType: QuestionType): void {
     this.sectionStates[`media_${questionType}`] = !this.sectionStates[`media_${questionType}`];
+  }
+
+  validateQuestion(questionType: QuestionType): void {
+    this.sectionStates[`validate_${questionType}`] = true;
+  }
+
+  isQuestionValidate(questionType: QuestionType): boolean {
+    const state = this.sectionStates[`validate_${questionType}`];
+    return Array.isArray(state) ? state.length > 0 : state;
   }
 
   toggleOption(questionType: QuestionType, optionId: number): void {
@@ -509,6 +611,7 @@ export class CreateComponent implements OnInit {
   toggleWordSelection(questionType: QuestionType, block: Block): void {
     block.isSelected = !block.isSelected;
     this.questionTextContents[questionType]= this.parseBlocksIntoText(this.questionTextObj[questionType]);
+    this.updateWordPreview();
 
     if (this.questionTextObj[questionType].blocks.filter((o: any) => o.isSelected === true).length === 0) {
       this.showToast('selectWord',this.currentLanguage);
@@ -597,11 +700,13 @@ export class CreateComponent implements OnInit {
     }
 
     questionData.coursesIds = this.selectedCourses;
-    questionData.language_fk = this.languageControl.value.id;
+    if(!this.isEditQuestion) questionData.language_fk = this.languageControl.value.id;
   
     this.loadingBarService.start();
     this.isSaving = true;
-    this.sendDataToBackend(questionData);
+
+    if(!this.isEditQuestion) this.sendDataToBackend(questionData);
+    else if(this.isEditQuestion) this.editQuestion(questionData);
   }
 
   getLanguages(): void {
@@ -616,6 +721,7 @@ export class CreateComponent implements OnInit {
   }
   
   sendDataToBackend(questionData: any): void {
+    console.log("question data",questionData);
     this.apiService.postQuestionData(questionData).subscribe(
       (response) => {
         const loadingTimer = setTimeout(() => {
@@ -624,7 +730,40 @@ export class CreateComponent implements OnInit {
           this.loadingBarService.complete();
           this.isSaving = false;
           
-          this.router.navigateByUrl('/');
+          this.router.navigateByUrl('/questions');
+          
+          clearTimeout(loadingTimer);
+        }, this.loadingDuration);
+      },
+      (e) => {
+
+        const loadingTimer = setTimeout(() => {
+          console.error('Error while sending data:', e.error.message);
+
+          this.showToast('failedToCreateQuestion', this.currentLanguage);
+
+          this.loadingBarService.complete();
+          this.isSaving = false;
+          clearTimeout(loadingTimer);
+        }, this.loadingDuration);
+      }
+    );
+  }
+
+  editQuestion(questionData: any): void {
+    this.apiService.editQuestion(questionData).subscribe(
+      (response) => {
+        const loadingTimer = setTimeout(() => {
+          console.log('Response from API:', response.message);
+          this.showToast('questionCreatedSuccessfully', this.currentLanguage);
+          //this.loadingBarService.complete();
+          //this.isSaving = false;
+          
+          //this.router.navigateByUrl('/questions');
+          this.router.navigate(['/questions'], { queryParams: { lang: this.currentLanguage } }).then(() => {
+            this.loadingBarService.complete();
+            this.isLoading = false;
+          });
           
           clearTimeout(loadingTimer);
         }, this.loadingDuration);
@@ -651,11 +790,10 @@ export class CreateComponent implements OnInit {
     return;
   }
 
-  areDataInvalid(): void {
-
+  areDataInvalid(): void {    
     const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
     if(!this.activeQuestionType || !questionData) return;
-
+    this.validateQuestion(this.activeQuestionType);
     if(!questionData.code.trim()) {
       questionData.code = '';
       return;
@@ -767,4 +905,8 @@ export class CreateComponent implements OnInit {
     return question.incorrectAnswerTipText && question.incorrectAnswerTipText.trim() !== '';
   }
   /* Save Question */
+
+  cancelEdit(){
+    this.router.navigateByUrl('/questions');
+  }
 }

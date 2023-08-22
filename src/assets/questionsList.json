@@ -1,0 +1,149 @@
+{
+    "header": {
+      "title": {
+        "en": "Questions List",
+        "fr": "Liste des questions",
+        "ar": "قائمة الأسئلة"
+      },
+      "button": {
+        "en": "Create new Question",
+        "fr": "Créer une nouvelle question",
+        "ar": "إنشاء سؤال جديد"
+      }
+    },
+    "filter": {
+        "choiceType": {
+            "en": "Question Type",
+            "fr": "Type de question",
+            "ar": "نوع السؤال"
+        },
+        "type": {
+            "en": "Type",
+            "fr": "Type",
+            "ar": "النوع"
+        },
+        "choiceLanguage": {
+            "en": "Choose Language",
+            "fr": "Choisir la langue",
+            "ar": "اختر اللغة"
+        },
+        "language": {
+            "en": "Language",
+            "fr": "la langue",
+            "ar": "اللغة"
+        },
+        "choiceCourse": {
+            "en": "Choose Course",
+            "fr": "Choisir le cour",
+            "ar": "اختيار الدورات"
+        },
+        "course": {
+            "en": "Course",
+            "fr": "le cour",
+            "ar": "الدورات"
+        },
+        "resetFilters": {
+            "en": "Reset Filters",
+            "fr": "Réinitialiser les filtres",
+            "ar": "إعادة تعيين الفلاتر"
+        },
+        "applyFilters": {
+            "en": "Apply Filters",
+            "fr": "Appliquer les filtres",
+            "ar": "تطبيق الفلاتر"
+        }
+    },
+    "table": {
+        "code": {
+            "en": "Code",
+            "fr": "Code",
+            "ar": "الرمز"
+        },
+        "type": {
+            "en": "Type",
+            "fr": "Type",
+            "ar": "نوع"
+        },
+        "question": {
+            "en": "Question",
+            "fr": "Question",
+            "ar": "السؤال"
+        },
+        "courses": {
+            "en": "Courses",
+            "fr": "les cours",
+            "ar": "الدورات"
+        },
+        "play": {
+            "en": "Play",
+            "fr": "Lire",
+            "ar": "تشغيل"
+        },
+        "edit": {
+            "en": "Edit",
+            "fr": "Modifier",
+            "ar": "تعديل"
+        },
+        "delete": {
+            "en": "Delete",
+            "fr": "Supprimer",
+            "ar": "حذف"
+        },
+        "noDataMatchingFilters": {
+            "en": "No data matching the filters:",
+            "fr": "Aucune donnée ne correspond aux filtres :",
+            "ar": "لا توجد بيانات تطابق الفلاتر:"
+        },
+        "itemsPerPageLabel": {
+            "en": "Items per page:",
+            "fr": "Éléments par page :",
+            "ar": "العناصر في الصفحة :"
+        },
+        "nextPageLabel": {
+            "en": "Next page",
+            "fr": "Page suivante",
+            "ar": "الصفحة التالية"
+        },
+        "previousPageLabel": {
+            "en": "Previous page",
+            "fr": "Page précédente",
+            "ar": "الصفحة السابقة"
+        },
+        "confirmDeleteLabel": {
+            "en": "Confirm Delete",
+            "fr": "Confirmer la suppression",
+            "ar": "تأكيد الحذف"
+        },
+        "deleteQuestionConfirmation": {
+            "en": "Are you sure you want to delete the question from the selected courses?",
+            "fr": "Êtes-vous sûr de vouloir supprimer la question des cours sélectionnés ?",
+            "ar": "هل أنت متأكد أنك تريد حذف السؤال من الدورات المحددة؟"
+        },
+        "cancel": {
+      "en": "Cancel",
+      "fr": "Annuler",
+      "ar": "إلغاء"
+    },
+    "close": {
+      "en": "Close",
+      "fr": "Fermer",
+      "ar": "إغلاق"
+    },
+    "confirm": {
+      "en": "Confirm Delete",
+      "fr": "Confirmer la suppression",
+      "ar": "تأكيد الحذف"
+    },
+
+    "deleteQuestionPermanently": {
+      "en": "Do you want to delete the question permanently?",
+      "fr": "Voulez-vous supprimer définitivement la question ?",
+      "ar": "هل تريد حذف السؤال بشكل دائم؟"
+    },
+    "deleteQuestionLabel": {
+      "en": "Delete Question",
+      "fr": "Supprimer la question",
+      "ar": "حذف السؤال"
+    }
+    }
+}  

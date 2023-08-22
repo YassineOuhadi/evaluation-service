@@ -22,7 +22,7 @@
       <mat-horizontal-stepper [selectedIndex]="currentStepIndex"
   (selectionChange)="onStepChanged($event.selectedIndex)" linear>
 
-        <mat-step [completed]="isLanguageValid()"> <!-- [completed]="isLanguageValid()" -->
+        <mat-step [completed]="isLanguageValid()" *ngIf="!isEditQuestion"> <!-- [completed]="isLanguageValid()" -->
           <div class="pt-4">
             <ng-template matStepLabel><span class="px-2">{{ content.step.label.language[this.currentLanguage] }}</span></ng-template>
             <mat-card class="shadow-md p-4" [@fadeInOut]>
@@ -54,6 +54,7 @@
             <mat-accordion mat-accordion>
               <mat-expansion-panel *ngFor="let question of questions; let i = index"
                                    [expanded]="activeQuestionType === question.type"
+                                   [hideToggle]="isEditQuestion"
                                    (opened)="panelOpenState = true"
                                    (closed)="panelOpenState = false"
                                    class="m-0">
@@ -72,21 +73,21 @@
                   <div *ngIf="question.type === activeQuestionType">
     
                       <!-- Question Code Input -->
-                      <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.code }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+                      <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.code && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
                         <mat-label>{{ content.step.card.form.field.code[this.currentLanguage] }}</mat-label>
-                        <input matInput name="code" [(ngModel)]="question.code" required>
+                        <input matInput name="code" [(ngModel)]="question.code" [required]="isQuestionValidate(activeQuestionType)" [disabled]="isEditQuestion">
                         <!-- Display the validation message for a required field -->
-                        <mat-error *ngIf="!question.code">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                        <mat-error *ngIf="!question.code && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                       </mat-form-field>
                       
                       <!-- Question Code Input -->
 
                       <!-- Choice Question Inputs -->
                       <div *ngIf="question.type === 'CHOICE'">
-                        <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.text }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+                        <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.text && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
                           <mat-label>{{ content.step.card.form.field.question[this.currentLanguage] }}</mat-label>
-                          <input matInput type="text" [(ngModel)]="question.text" name="question" required>
-                          <mat-error *ngIf="!question.text">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                          <input matInput type="text" [(ngModel)]="question.text" name="question" [required]="isQuestionValidate(activeQuestionType)">
+                          <mat-error *ngIf="!question.text && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                         </mat-form-field>
                         <mat-checkbox class="checkbox" name="isMultipleChoice" [(ngModel)]="question.isMultipleChoice"><span class="mx-2">{{ content.step.card.form.field.choice[this.currentLanguage] }}</span></mat-checkbox>
                         <ng-container *ngIf="question.options && question.options.length > 0; else br">
@@ -99,10 +100,10 @@
                               <mat-icon class="remove-option" (click)="removeOption(question.type, option.id)">remove_circle</mat-icon>
                             </h3>
                             <div class="input-content pb-0" [@fadeInOut] *ngIf="isOptionOpen(question.type, option.id)">
-                              <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !option.text }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+                              <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !option.text && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
                                 <mat-label>{{ content.step.card.form.field.option.text[this.currentLanguage] }}</mat-label>
                                 <!-- Add the option ID and hyphen before the text -->
-                                <textarea matInput name="optionText{{option.id}}" [(ngModel)]="option.text" required>{{ option.id }}- {{ option.text }}</textarea>
+                                <textarea matInput name="optionText{{option.id}}" [(ngModel)]="option.text" [required]="isQuestionValidate(activeQuestionType)">{{ option.id }}- {{ option.text }}</textarea>
                                 <mat-error *ngIf="!option.text">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                               </mat-form-field>
                               <mat-checkbox class="checkbox 10px" name="optionCorrect{{option.id}}" [(ngModel)]="option.isCorrect"><span class="px-2">{{ content.step.card.form.field.correct[this.currentLanguage] }}</span></mat-checkbox>
@@ -118,12 +119,12 @@
     
                       <!-- True/False Question Inputs -->
                       <div *ngIf="question.type === 'TRUE_FALSE' ">
-                        <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.text }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+                        <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.text && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
                           <mat-label>{{ content.step.card.form.field.question[this.currentLanguage] }}</mat-label>
-                          <input matInput name="question" [(ngModel)]="question.text" required>
-                          <mat-error *ngIf="!question.text">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                          <input matInput name="question" [(ngModel)]="question.text" [required]="isQuestionValidate(activeQuestionType)">
+                          <mat-error *ngIf="!question.text && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                         </mat-form-field>
-                        <mat-checkbox class="checkbox" name="optionCorrect" [(ngModel)]="question.isCorrect"><span class="mx-2">{{ content.step.card.form.field.correct[this.currentLanguage] }}</span></mat-checkbox>
+                        <mat-checkbox class="checkbox" name="isCorrect" [(ngModel)]="question.isCorrect"><span class="mx-2">{{ content.step.card.form.field.correct[this.currentLanguage] }}</span></mat-checkbox>
                       </div>
                       <!-- True/False Question Inputs -->
     
@@ -136,10 +137,10 @@
                           </h3>
                           <div class="input-content" [@fadeInOut] *ngIf="isBlockOpen(question.type)">
                             <ng-container *ngIf="!isWordPreview(question.type); else wordPreview">
-                              <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !questionTextContents[question.type] }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+                              <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !questionTextContents[question.type] && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
                                 <mat-label>{{ content.step.card.form.field.text[this.currentLanguage] }}</mat-label>
-                                <textarea matInput name="textBlock" [(ngModel)]="questionTextContents[question.type]" (input)="onTextareaInput(question.type)" required></textarea>
-                                <mat-error *ngIf="!questionTextContents[question.type]">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                                <textarea matInput name="textBlock" [(ngModel)]="questionTextContents[question.type]" (input)="onTextareaInput(question.type)" [required]="isQuestionValidate(activeQuestionType)"></textarea>
+                                <mat-error *ngIf="!questionTextContents[question.type] && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                               </mat-form-field>
                             </ng-container>
                             <ng-template #wordPreview>
@@ -157,7 +158,7 @@
                                 </div>                              
                               </div>
                             </ng-template>                         
-                            <div class="preview-icon" (click)="togglePreview(question.type)">
+                            <div class="preview-icon" [ngClass]="{ 'right': !rightToLeft() }" (click)="togglePreview(question.type)">
                               <mat-icon>{{ isWordPreview(question.type) ? 'text_fields' : 'touch_app' }}</mat-icon>
                             </div>
                           </div>
@@ -172,15 +173,15 @@
                           {{ content.step.card.form.field.tips.title[this.currentLanguage] }}
                         </h3>
                         <div class="input-content pb-0" [@fadeInOut] *ngIf="isTipsOpen(question.type)">
-                          <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.correctAnswerTipText }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
+                          <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.correctAnswerTipText && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'">
                             <mat-label>{{ content.step.card.form.field.tips.correct[this.currentLanguage] }}</mat-label>
-                            <input matInput name="correctAnswerTipText" [(ngModel)]="question.correctAnswerTipText" required>
-                            <mat-error *ngIf="!question.correctAnswerTipText">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                            <input matInput name="correctAnswerTipText" [(ngModel)]="question.correctAnswerTipText" [required]="isQuestionValidate(activeQuestionType)">
+                            <mat-error *ngIf="!question.correctAnswerTipText && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                           </mat-form-field>
-                          <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.incorrectAnswerTipText }" [appearance]="rightToLeft() ? 'outline' : 'fill'"> 
+                          <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.incorrectAnswerTipText && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'"> 
                             <mat-label>{{ content.step.card.form.field.tips.incorrect[this.currentLanguage] }}</mat-label>
-                            <input matInput name="incorrectAnswerTipText" [(ngModel)]="question.incorrectAnswerTipText" required>
-                            <mat-error *ngIf="!question.incorrectAnswerTipText">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                            <input matInput name="incorrectAnswerTipText" [(ngModel)]="question.incorrectAnswerTipText" [required]="isQuestionValidate(activeQuestionType)">
+                            <mat-error *ngIf="!question.incorrectAnswerTipText && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                           </mat-form-field>
                         </div>
                       </div>   
@@ -193,17 +194,20 @@
                         <div class="input-content pb-0" [@fadeInOut] *ngIf="isSettingsOpen(question.type)">
                           <mat-checkbox class="checkbox" name="withTiming" [(ngModel)]="question.isWithTiming"><span class="mx-2">{{ content.step.card.form.field.settings.withTiming[this.currentLanguage] }}</span></mat-checkbox>
                           
-                          <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.duration }" [appearance]="rightToLeft() ? 'outline' : 'fill'" *ngIf="question.isWithTiming">
+                          <mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.duration && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'" *ngIf="question.isWithTiming">
                             <mat-label>{{ content.step.card.form.field.settings.duration[this.currentLanguage] }}</mat-label>
-                            <input matInput type="number" name="questionDuration" [(ngModel)]="question.duration" required
+                            <input matInput type="number" name="questionDuration" [(ngModel)]="question.duration" [required]="isQuestionValidate(activeQuestionType)"
                                    inputmode="numeric" pattern="[0-9]*" min="1">
-                            <mat-error *ngIf="!question.duration">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
+                            <mat-error *ngIf="!question.duration && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                           </mat-form-field>
                         </div>
                       </div>                    
 
                       <div class="card-buttons mb-2">
-                        <button mat-raised-button class="exit_btn rounded" type="button" matStepperPrevious>{{ content.step.card.button.previews[this.currentLanguage] }}</button>
+                        <button mat-raised-button class="exit_btn rounded" type="button" *ngIf="isEditQuestion"
+                        (click)="cancelEdit()">Cancel</button>
+                        <button mat-raised-button class="exit_btn rounded" type="button" *ngIf="!isEditQuestion"
+                                matStepperPrevious>{{ content.step.card.button.previews[this.currentLanguage] }}</button>
                         <button mat-raised-button class="next_btn rounded" type="button" (click)="areDataInvalid()" matStepperNext>{{ content.step.card.button.next[this.currentLanguage] }}</button>
                       </div>
                   </div>
