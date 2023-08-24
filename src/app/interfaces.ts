@@ -5,6 +5,37 @@ export enum QuestionType {
   MATCHING = "MATCHING"
 }
 
+
+/* Create page */
+
+export interface CreateQuestionData {
+  id?: number;
+  type: QuestionType;
+  code: string;
+  text: string;
+  correctAnswerTipText: string;
+  incorrectAnswerTipText: string;
+  coursesIds: number[]; 
+  language_fk: number;
+  isMultipleChoice?: boolean;
+  isCorrect?: boolean;
+  isDragWords?: boolean;
+  options?: {
+    id: number;
+    text: string;
+    isCorrect: boolean
+  }[];
+  isWithTiming: boolean;
+  duration?: number;
+}
+
+export interface Text {
+  blocks: Block[];
+}
+
+
+/* Play page & Questions list page */
+
 export interface Option {
   id: number;
   text: string;

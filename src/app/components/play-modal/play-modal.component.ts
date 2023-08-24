@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { ApiService } from '../../new-que.service';
+import { AppService } from '../../app.service';
 import { Observable } from 'rxjs';
 import { Subscription, interval } from 'rxjs';
 import { QuestionType, 
@@ -69,7 +69,7 @@ currentDraggedWord: HiddenWord | null = null;
   
 
   constructor(private http: HttpClient, @Inject(MAT_DIALOG_DATA) 
-    public data: { questionObj: QuestionObj; currentLanguage: string }, private apiService: ApiService,public dialogRef: MatDialogRef<PlayModalComponent> ) {
+    public data: { questionObj: QuestionObj; currentLanguage: string }, private apiService: AppService,public dialogRef: MatDialogRef<PlayModalComponent> ) {
     this.http.get("assets/playConstants.json").subscribe((res: any) => {
       this.content = res;
     });
@@ -134,7 +134,7 @@ this.currentLanguage = this.data.currentLanguage;
             
           const data: { questionId: number; isCorrect: boolean } = {
             questionId: queObj.question.id,
-            isCorrect: option.text,
+            isCorrect: option.text.toLowerCase() === 'true'
           };
          
                 

@@ -1,24 +1,25 @@
 import { Subscription, interval } from 'rxjs';
-import {  ElementRef } from '@angular/core';
+import { ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Component,HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { ApiService } from '../../new-que.service';
+import { AppService } from '../../app.service';
 import { ActivatedRoute } from '@angular/router';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
-import { QuestionType, 
-         Option, 
-         Block, 
-         Course,
-         HiddenWord, 
-         QuestionObj, 
-         SelectedBlockInfo, 
-         Language, 
-         Exam
-       } from '../../interfaces';
+import {
+  QuestionType,
+  Option,
+  Block,
+  Course,
+  HiddenWord,
+  QuestionObj,
+  SelectedBlockInfo,
+  Language,
+  Exam
+} from '../../interfaces';
 
 @Component({
   selector: 'app-quiz-play',
@@ -42,7 +43,7 @@ import { QuestionType,
   ]
 })
 
-export class PlayComponent implements OnInit{
+export class PlayComponent implements OnInit {
 
   currentLanguage = 'en';
   content: any;
@@ -50,11 +51,11 @@ export class PlayComponent implements OnInit{
   showWarning: boolean = true;
   isQuizStarted: boolean = false;
   isQuizEnded: boolean = false;
-  questionsList: QuestionObj[]= [];
+  questionsList: QuestionObj[] = [];
   currentQuestionNo: number = 0;
-  remainingTime:number = 0;
+  remainingTime: number = 0;
   timer = interval(1000);
-  subscription: Subscription [] = [];
+  subscription: Subscription[] = [];
   correctAnswerCount: number = 0;
   currentDraggedWord: HiddenWord | null = null;
   currentDroppedWord: HiddenWord | null = null;
@@ -74,13 +75,12 @@ export class PlayComponent implements OnInit{
   isArchived: boolean = false;
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private elementRef: ElementRef,
-    private apiService: ApiService,
+    private apiService: AppService,
     private route: ActivatedRoute,
-    private router: Router)
-  {
-    this.http.get("assets/playConstants.json").subscribe((res:any)=>{
+    private router: Router) {
+    this.http.get("assets/playConstants.json").subscribe((res: any) => {
       //debugger;
       this.content = res;
     });
@@ -89,7 +89,7 @@ export class PlayComponent implements OnInit{
     this.courseId = 1;
   }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.isMiniQuiz = params['isMiniQuiz'] === 'true';
     });
@@ -97,21 +97,21 @@ export class PlayComponent implements OnInit{
     if (!this.isMiniQuiz) {
       this.apiService.canTakeExam(this.campaignId, this.userId).subscribe(
         (response: any) => {
-            this.isUserCanTakeExam = response.isUserCanTakeExam;
-            if (this.isUserCanTakeExam) {
-                this.isContinueExam = response.isContinueExam;
-                this.totalQuestions = response.totalQuestions;
-                if (this.isContinueExam) {
-                    this.nbQuestionsAttempted = response.nbQuestionsAttempted;
-                }
-            } else {
-                this.router.navigateByUrl('/');
+          this.isUserCanTakeExam = response.isUserCanTakeExam;
+          if (this.isUserCanTakeExam) {
+            this.isContinueExam = response.isContinueExam;
+            this.totalQuestions = response.totalQuestions;
+            if (this.isContinueExam) {
+              this.nbQuestionsAttempted = response.nbQuestionsAttempted;
             }
+          } else {
+            this.router.navigateByUrl('/');
+          }
         },
         (error) => {
-            console.error('Error while checking if user can take the exam:', error);
+          console.error('Error while checking if user can take the exam:', error);
         }
-    );
+      );
     }
   }
 
@@ -129,18 +129,18 @@ export class PlayComponent implements OnInit{
   ngOnDestroy() {
     //alert("hh");
     if (this.subscription) {
-    this.subscription.forEach(element => {
-          element.unsubscribe();
-          this.finish();
-        });
+      this.subscription.forEach(element => {
+        element.unsubscribe();
+        this.finish();
+      });
     }
   }
 
   /**/
 
-  onClickTitle() {}
+  onClickTitle() { }
 
-  showWarningPopup() { 
+  showWarningPopup() {
     this.showWarning = true;
   }
 
@@ -184,19 +184,19 @@ export class PlayComponent implements OnInit{
       if (word.startsWith('**')) {
         if (word.endsWith('**')) {
           const trimmedWord = word.substring(2, word.length - 2);
-          blocks.push({ word: trimmedWord, specialCharacter, isSelected: true});
-        } 
-        else if(specialCharacters.some(specialChar => word.endsWith(`**${specialChar}`))){
+          blocks.push({ word: trimmedWord, specialCharacter, isSelected: true });
+        }
+        else if (specialCharacters.some(specialChar => word.endsWith(`**${specialChar}`))) {
           const trimmedWord = word.substring(2, word.length - 3);
-          const lastChar = word[word.length - 1]; 
+          const lastChar = word[word.length - 1];
           specialCharacter = specialCharacters.includes(lastChar) ? lastChar : undefined;
           blocks.push({ word: trimmedWord, specialCharacter, isSelected: true });
-        } 
+        }
         else {
           wordBuffer = word.substring(2);
           isSelected = true;
         }
-      } 
+      }
       else if (word.endsWith('**')) {
         wordBuffer += ` ${word.substring(0, word.length - 2)}`;
         const lastChar = word[word.length - 1]; // Check the character before **
@@ -227,11 +227,11 @@ export class PlayComponent implements OnInit{
       }
       else if (isSelected) {
         wordBuffer += ` ${word}`;
-      } 
+      }
       else {
         const lastChar = word[word.length - 1];
         specialCharacter = specialCharacters.includes(lastChar) ? lastChar : undefined;
-        if(specialCharacter){
+        if (specialCharacter) {
           word = word.substring(0, word.length - 1);
         }
         blocks.push({ word, specialCharacter, isSelected: false });
@@ -240,25 +240,25 @@ export class PlayComponent implements OnInit{
     if (wordBuffer !== '') {
       blocks.push({ word: wordBuffer.trim(), isSelected });
     }
-    return  blocks ;
+    return blocks;
   }
 
   onTextareaInput() {
-    if(this.questionsList[this.currentQuestionNo].type !== QuestionType.FILL_BLANKS) return;
-    if(!this.questionsList[this.currentQuestionNo].question.isDragWords) return;
+    if (this.questionsList[this.currentQuestionNo].type !== QuestionType.FILL_BLANKS) return;
+    if (!this.questionsList[this.currentQuestionNo].question.isDragWords) return;
     this.isMiniQuiz ? (this.questionsList[this.currentQuestionNo].question.isValidate = false) : null;
   }
 
   refreshDragDropContent() {
     this.currentDroppedWord = null;
-    this.questionsList[this.currentQuestionNo].question.textBlocks.filter((o:any)=>o.isSelected == true).forEach((block) => (block.word = ''));
+    this.questionsList[this.currentQuestionNo].question.textBlocks.filter((o: any) => o.isSelected == true).forEach((block) => (block.word = ''));
     this.questionsList[this.currentQuestionNo].question.hiddenWords?.forEach((hiddenWord: HiddenWord) => {
-      hiddenWord.isDraggable =true;
+      hiddenWord.isDraggable = true;
     })
     if (this.questionsList[this.currentQuestionNo].question.isCorrect) {
-            this.questionsList[this.currentQuestionNo].question.isCorrect = !this.questionsList[this.currentQuestionNo].question.isCorrect; // Reset isCorrect flag for the question
-            this.correctAnswerCount--;
-            this.questionsList[this.currentQuestionNo].question.isValidate = false;
+      this.questionsList[this.currentQuestionNo].question.isCorrect = !this.questionsList[this.currentQuestionNo].question.isCorrect; // Reset isCorrect flag for the question
+      this.correctAnswerCount--;
+      this.questionsList[this.currentQuestionNo].question.isValidate = false;
     }
   }
 
@@ -266,7 +266,7 @@ export class PlayComponent implements OnInit{
     const question = this.questionsList[this.currentQuestionNo]?.question;
     return question?.hiddenWords?.some(word => word.isDraggable) || false;
   }
-  
+
   onDragStart(event: DragEvent, dragWord: HiddenWord) {
     this.currentDraggedWord = dragWord;
     const draggedElement = event.target as HTMLElement;
@@ -277,7 +277,7 @@ export class PlayComponent implements OnInit{
     this.currentDraggedWord = dragWord;
   }
 
-  onClickEnd() {}
+  onClickEnd() { }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -285,7 +285,7 @@ export class PlayComponent implements OnInit{
 
   onDrop(event: DragEvent, block: Block) {
     event.preventDefault();
-    if(this.questionsList[this.currentQuestionNo].type !== QuestionType.FILL_BLANKS || !this.currentDraggedWord) return;
+    if (this.questionsList[this.currentQuestionNo].type !== QuestionType.FILL_BLANKS || !this.currentDraggedWord) return;
     const dropElement = event.target as HTMLElement;
     const draggedWord = this.currentDraggedWord.word;
     if (dropElement.tagName.toLowerCase() === 'span' && this.currentDraggedWord.isDraggable) {
@@ -304,15 +304,15 @@ export class PlayComponent implements OnInit{
   }
 
   selectOption(option: any) {
-    if(this.questionsList[this.currentQuestionNo].type === QuestionType.CHOICE && this.questionsList[this.currentQuestionNo].question.isMultipleChoice)
+    if (this.questionsList[this.currentQuestionNo].type === QuestionType.CHOICE && this.questionsList[this.currentQuestionNo].question.isMultipleChoice)
       option.isSelected = !option.isSelected;
     else if ((this.questionsList[this.currentQuestionNo].type === QuestionType.CHOICE && !this.questionsList[this.currentQuestionNo].question.isMultipleChoice) || (this.questionsList[this.currentQuestionNo].type === QuestionType.TRUE_FALSE)) {
-      if(option.isSelected) return;
-      if(this.questionsList[this.currentQuestionNo].type === QuestionType.TRUE_FALSE) {
-        this.questionsList[this.currentQuestionNo].question.options?.filter((m:any)=>m.isSelected == true).forEach((o:any)=>o.isSelected = false);
+      if (option.isSelected) return;
+      if (this.questionsList[this.currentQuestionNo].type === QuestionType.TRUE_FALSE) {
+        this.questionsList[this.currentQuestionNo].question.options?.filter((m: any) => m.isSelected == true).forEach((o: any) => o.isSelected = false);
         option.isSelected = !option.isSelected;
       } else {
-        this.questionsList[this.currentQuestionNo].question.options?.filter((m:any)=>m.isSelected == true).forEach((o:any)=>o.isSelected = false);
+        this.questionsList[this.currentQuestionNo].question.options?.filter((m: any) => m.isSelected == true).forEach((o: any) => o.isSelected = false);
         option.isSelected = !option.isSelected;
       }
     }
@@ -320,14 +320,14 @@ export class PlayComponent implements OnInit{
   }
 
   isOptionSelected(options: any) {
-    return options.filter((m:any)=>m.isSelected == true).length !== 0;
+    return options.filter((m: any) => m.isSelected == true).length !== 0;
   }
 
   getInfoResponse(): any {
     if (this.questionsList[this.currentQuestionNo].type === QuestionType.FILL_BLANKS) {
-      const selectedBlocks: { 
-        blockNumber: number; 
-        text: string 
+      const selectedBlocks: {
+        blockNumber: number;
+        text: string
       }[] = [];
       let blockNumber = 1;
       for (const block of this.questionsList[this.currentQuestionNo].question.textBlocks) {
@@ -335,63 +335,64 @@ export class PlayComponent implements OnInit{
           selectedBlocks.push({ blockNumber: blockNumber++, text: block.word });
         }
       }
-      const data: { 
-        questionId: number; 
-        blocks: { 
-          blockNumber: number; 
-          text: string 
-        }[] 
+      const data: {
+        questionId: number;
+        blocks: {
+          blockNumber: number;
+          text: string
+        }[]
       } = {
         questionId: this.questionsList[this.currentQuestionNo].question.id,
         blocks: selectedBlocks,
       };
       return data;
-    } else if(this.questionsList[this.currentQuestionNo].type === QuestionType.CHOICE) {
-      if(this.questionsList[this.currentQuestionNo].question.isMultipleChoice) {
-        const optionsData: { 
-          id: number; 
-          isCorrect: boolean 
+    } else if (this.questionsList[this.currentQuestionNo].type === QuestionType.CHOICE) {
+      if (this.questionsList[this.currentQuestionNo].question.isMultipleChoice) {
+        const optionsData: {
+          id: number;
+          isCorrect: boolean
         }[] = this.questionsList[this.currentQuestionNo].question.options?.map((opt) => ({
           id: opt.id,
           isCorrect: opt.isSelected,
         })) || [];
-        const data: { 
-          questionId: number; 
-          options: { 
-            id: number; 
-            isCorrect: boolean 
-          }[] 
+        const data: {
+          questionId: number;
+          options: {
+            id: number;
+            isCorrect: boolean
+          }[]
         } = {
           questionId: this.questionsList[this.currentQuestionNo].question.id,
           options: optionsData,
         };
         return data;
       } else {
-        const optionsData: { 
-          id: number; 
-          isCorrect: boolean 
+        const optionsData: {
+          id: number;
+          isCorrect: boolean
         }[] = this.questionsList[this.currentQuestionNo].question.options?.map((opt) => ({
           id: opt.id,
           isCorrect: opt.isSelected,
         })) || [];
-        const data: { 
-          questionId: number; 
-          options: { 
-            id: number; 
-            isCorrect: boolean 
-          }[] } = {
+        const data: {
+          questionId: number;
+          options: {
+            id: number;
+            isCorrect: boolean
+          }[]
+        } = {
           questionId: this.questionsList[this.currentQuestionNo].question.id,
           options: optionsData,
         };
         return data;
       }
-    } else if(this.questionsList[this.currentQuestionNo].type === QuestionType.TRUE_FALSE) {
+    } else if (this.questionsList[this.currentQuestionNo].type === QuestionType.TRUE_FALSE) {
       const selectedOption = this.questionsList[this.currentQuestionNo].question.options?.find((o: any) => o.isSelected);
-      if(!selectedOption) return;
+      if (!selectedOption) return;
       const data: { questionId: number; isCorrect: boolean } = {
         questionId: this.questionsList[this.currentQuestionNo].question.id,
         isCorrect: selectedOption.text.toLowerCase() === 'true',
-      };  
+      };
       return data;
     }
   }
@@ -399,12 +400,12 @@ export class PlayComponent implements OnInit{
   /**/
 
   start() {
-    this.currentQuestionNo=0;
-    if(!this.isMiniQuiz && this.questionsList[this.currentQuestionNo].question.isWithTiming) 
+    this.currentQuestionNo = 0;
+    if (!this.isMiniQuiz && this.questionsList[this.currentQuestionNo].question.isWithTiming)
       this.remainingTime = this.questionsList[this.currentQuestionNo].question.duration;
     this.showWarning = false;
     this.isQuizEnded = false;
-    this.isQuizStarted = false;  
+    this.isQuizStarted = false;
   }
 
   startQuiz() {
@@ -412,22 +413,22 @@ export class PlayComponent implements OnInit{
     this.showWarning = false;
     this.isQuizStarted = true;
 
-    if(this.isMiniQuiz) {
+    if (this.isMiniQuiz) {
       this.loadQuestions(this.courseId);
     } else {
-      const data: { campaignId: number; userId: number;} = {
-          campaignId: this.campaignId,
-          userId: this.userId,
+      const data: { campaignId: number; userId: number; } = {
+        campaignId: this.campaignId,
+        userId: this.userId,
       };
-      this.beginExam(data); 
+      this.beginExam(data);
     }
   }
 
   ContinueQuiz() {
-    if(this.isMiniQuiz || (!this.isMiniQuiz && this.questionsList.length>0)) {
+    if (this.isMiniQuiz || (!this.isMiniQuiz && this.questionsList.length > 0)) {
       this.isQuizEnded = false;
       this.showWarning = false;
-      this.isQuizStarted = true;  
+      this.isQuizStarted = true;
       this.isContinueExam = false;
     } else {
       this.isContinueExam = false;
@@ -437,7 +438,7 @@ export class PlayComponent implements OnInit{
 
   ReplayQuiz() {
     this.currentQuestionNo = 0;
-    if(this.questionsList[this.currentQuestionNo].question.isWithTiming) this.remainingTime = this.questionsList[this.currentQuestionNo].question.duration;
+    if (this.questionsList[this.currentQuestionNo].question.isWithTiming) this.remainingTime = this.questionsList[this.currentQuestionNo].question.duration;
     this.startQuiz();
   }
 
@@ -448,13 +449,13 @@ export class PlayComponent implements OnInit{
   }
 
   finish() {
-    if(!this.isMiniQuiz) {
-        this.apiService.quitExam(this.examSession.sessionId).subscribe(
+    if (!this.isMiniQuiz) {
+      this.apiService.quitExam(this.examSession.sessionId).subscribe(
         (response) => {
           this.score = response.score;
           this.isArchived = response.isArchived;
           this.questionsList.forEach((questionObj) => {
-          const questionId = questionObj.question.id;
+            const questionId = questionObj.question.id;
             this.getRepport(questionId).subscribe((responses) => {
               questionObj.responses = responses;
             });
@@ -462,7 +463,7 @@ export class PlayComponent implements OnInit{
           // get used questions and the iscorrect question attribute
           this.currentQuestionNo = 0;
           this.isQuizEnded = true;
-          this.isQuizStarted = false; 
+          this.isQuizStarted = false;
         },
         (error) => {
           console.error('Error', error);
@@ -470,18 +471,18 @@ export class PlayComponent implements OnInit{
       );
     } else {
       if (this.questionsList[this.currentQuestionNo].question.isWithTiming || this.remainingTime == 0) {
-          this.currentQuestionNo = 0;
-          this.isQuizEnded = true;
-          this.isQuizStarted = false; 
+        this.currentQuestionNo = 0;
+        this.isQuizEnded = true;
+        this.isQuizStarted = false;
       } else {
-          this.isQuizStarted = false;
-          this.isContinueExam = true;
-          this.showWarningPopup();
+        this.isQuizStarted = false;
+        this.isContinueExam = true;
+        this.showWarningPopup();
       }
     }
   }
-   
-  exit(){
+
+  exit() {
     this.router.navigateByUrl('/');
   }
 
@@ -499,13 +500,13 @@ export class PlayComponent implements OnInit{
             ];
           }
 
-          if(item.type === QuestionType.FILL_BLANKS) {
+          if (item.type === QuestionType.FILL_BLANKS) {
             item.question.textBlocks = this.parseTextIntoBlocks(item.question.text);
           }
 
-          if((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
+          if ((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
             item.question.hiddenWords?.forEach((word: HiddenWord) => {
-              word.isDraggable =true;
+              word.isDraggable = true;
             })
           }
 
@@ -518,9 +519,9 @@ export class PlayComponent implements OnInit{
           item.question.isCorrect = false;
 
           item.question.isWithTiming = item.question.isWithTiming;
-          if(item.question.isWithTiming) item.question.duration = item.question.duration;
+          if (item.question.isWithTiming) item.question.duration = item.question.duration;
 
-          if(this.isMiniQuiz) {
+          if (this.isMiniQuiz) {
             item.question.isValidate = false;
           }
 
@@ -540,43 +541,43 @@ export class PlayComponent implements OnInit{
 
   validateUserResponse(data: any): void {
     this.validateResponseObservable(data).subscribe((isCorrect: boolean) => {
-          if (this.questionsList[this.currentQuestionNo].question.isCorrect && !isCorrect) {
-            this.correctAnswerCount--;
-            this.questionsList[this.currentQuestionNo].question.isCorrect = !this.questionsList[this.currentQuestionNo].question.isCorrect; // Reset isCorrect flag for the question
-          } else if (isCorrect && !this.questionsList[this.currentQuestionNo].question.isCorrect) {
-            this.correctAnswerCount++;
-            this.questionsList[this.currentQuestionNo].question.isCorrect = !this.questionsList[this.currentQuestionNo].question.isCorrect; // Set isCorrect flag for the question
-          };
-          this.isMiniQuiz ? (this.questionsList[this.currentQuestionNo].question.isValidate = true) : null;
-          console.log(this.correctAnswerCount);
+      if (this.questionsList[this.currentQuestionNo].question.isCorrect && !isCorrect) {
+        this.correctAnswerCount--;
+        this.questionsList[this.currentQuestionNo].question.isCorrect = !this.questionsList[this.currentQuestionNo].question.isCorrect; // Reset isCorrect flag for the question
+      } else if (isCorrect && !this.questionsList[this.currentQuestionNo].question.isCorrect) {
+        this.correctAnswerCount++;
+        this.questionsList[this.currentQuestionNo].question.isCorrect = !this.questionsList[this.currentQuestionNo].question.isCorrect; // Set isCorrect flag for the question
+      };
+      this.isMiniQuiz ? (this.questionsList[this.currentQuestionNo].question.isValidate = true) : null;
+      console.log(this.correctAnswerCount);
     });
   }
-  
+
   validateResponseObservable(data: any): Observable<boolean> {
-  return new Observable<boolean>((observer) => {
-    this.apiService.validateResponse(data).subscribe(
-      (response) => {
-        observer.next(response === true);
-        observer.complete();
-      },
-      (error) => {
-        console.error('Error while fetching questions data:', error);
-        observer.next(false);
-        observer.complete();
-      }
-    );
-  });
+    return new Observable<boolean>((observer) => {
+      this.apiService.validateResponse(data).subscribe(
+        (response) => {
+          observer.next(response === true);
+          observer.complete();
+        },
+        (error) => {
+          console.error('Error while fetching questions data:', error);
+          observer.next(false);
+          observer.complete();
+        }
+      );
+    });
   }
 
   nextQuestion() {
-    if(this.isMiniQuiz) this.moveToNextQuestion();
+    if (this.isMiniQuiz) this.moveToNextQuestion();
     else this.validateAndProceed();
   }
 
   moveToNextQuestion() {
-    if(this.isMiniQuiz) {
-      if(this.currentQuestionNo < this.questionsList.length-1) {
-          this.currentQuestionNo ++;  
+    if (this.isMiniQuiz) {
+      if (this.currentQuestionNo < this.questionsList.length - 1) {
+        this.currentQuestionNo++;
       } else {
         this.subscription.forEach(element => {
           element.unsubscribe();
@@ -599,7 +600,7 @@ export class PlayComponent implements OnInit{
   }
 
   validateAndProceed() {
-    if(this.isMiniQuiz) return this.finish();
+    if (this.isMiniQuiz) return this.finish();
     const data = {
       sessionId: this.examSession.sessionId,
       ...this.getInfoResponse()
@@ -608,9 +609,9 @@ export class PlayComponent implements OnInit{
     this.apiService.validateQuestion(data).subscribe(
       (response) => {
         if (response === true) {
-            this.correctAnswerCount--;
+          this.correctAnswerCount--;
         } else {
-            this.correctAnswerCount++;
+          this.correctAnswerCount++;
         };
         this.questionsList[this.currentQuestionNo].question.isCorrect = response === true;
         this.moveToNextQuestion();
@@ -623,7 +624,7 @@ export class PlayComponent implements OnInit{
 
   /* Final exam */
 
-  beginExam(data: { campaignId: number; userId: number;}) {
+  beginExam(data: { campaignId: number; userId: number; }) {
     this.apiService.beginExam(data).subscribe(
       (response) => {
         console.log(response);
@@ -636,13 +637,13 @@ export class PlayComponent implements OnInit{
             ];
           }
 
-          if(item.type === QuestionType.FILL_BLANKS) {
+          if (item.type === QuestionType.FILL_BLANKS) {
             item.question.textBlocks = this.parseTextIntoBlocks(item.question.text);
           }
 
-          if((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
+          if ((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
             item.question.hiddenWords?.forEach((word: HiddenWord) => {
-              word.isDraggable =true;
+              word.isDraggable = true;
             })
           }
 
@@ -655,9 +656,9 @@ export class PlayComponent implements OnInit{
           item.question.isCorrect = false;
 
           item.question.isWithTiming = item.question.isWithTiming;
-          if(item.question.isWithTiming) item.question.duration = item.question.duration;
+          if (item.question.isWithTiming) item.question.duration = item.question.duration;
 
-          if(this.isMiniQuiz) {
+          if (this.isMiniQuiz) {
             item.question.isValidate = false;
           }
 
@@ -680,15 +681,15 @@ export class PlayComponent implements OnInit{
           }));
         }
 
-        if(this.questionsList[this.currentQuestionNo].question.isWithTiming) {
+        if (this.questionsList[this.currentQuestionNo].question.isWithTiming) {
           //this.remainingTime = 10;
           this.remainingTime = this.questionsList[this.currentQuestionNo].question.duration;
-          if(!this.isMiniQuiz){
-            this.subscription.push(this.timer.subscribe(res=> {
-              if((this.remainingTime != 0)&&(!this.isContinueExam)) {
-                this.remainingTime --;
-              } 
-              if(this.remainingTime == 0) {
+          if (!this.isMiniQuiz) {
+            this.subscription.push(this.timer.subscribe(res => {
+              if ((this.remainingTime != 0) && (!this.isContinueExam)) {
+                this.remainingTime--;
+              }
+              if (this.remainingTime == 0) {
                 if (this.currentQuestionNo == this.questionsList.length - 1)
                   this.validateAndProceed();//finish final exam
                 else this.nextQuestion();
@@ -714,19 +715,19 @@ export class PlayComponent implements OnInit{
   }
 
   getRepport(questionId: number): Observable<string[]> {
-  return this.apiService.getAnswer(questionId).pipe(
-    map((response: string[]) => {
-      if (Array.isArray(response)) {
-        return response;
-      } else {
-        return [];
-      }
-    }),
-    catchError((error) => {
-      console.error('Error while fetching answer data:', error);
-      return of([]);
-    })
-  );
+    return this.apiService.getAnswer(questionId).pipe(
+      map((response: string[]) => {
+        if (Array.isArray(response)) {
+          return response;
+        } else {
+          return [];
+        }
+      }),
+      catchError((error) => {
+        console.error('Error while fetching answer data:', error);
+        return of([]);
+      })
+    );
   }
 
   getTotalTestDurationInMinutes(): number {

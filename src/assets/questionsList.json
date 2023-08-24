@@ -13,8 +13,8 @@
     },
     "filter": {
         "choiceType": {
-            "en": "Question Type",
-            "fr": "Type de question",
+            "en": "Types",
+            "fr": "Types",
             "ar": "نوع السؤال"
         },
         "type": {
@@ -23,8 +23,8 @@
             "ar": "النوع"
         },
         "choiceLanguage": {
-            "en": "Choose Language",
-            "fr": "Choisir la langue",
+            "en": "Languages",
+            "fr": "Les langues",
             "ar": "اختر اللغة"
         },
         "language": {
@@ -33,9 +33,9 @@
             "ar": "اللغة"
         },
         "choiceCourse": {
-            "en": "Choose Course",
-            "fr": "Choisir le cour",
-            "ar": "اختيار الدورات"
+            "en": "Courses",
+            "fr": "les cours",
+            "ar": "الدورات"
         },
         "course": {
             "en": "Course",
@@ -140,9 +140,19 @@
       "fr": "Voulez-vous supprimer définitivement la question ?",
       "ar": "هل تريد حذف السؤال بشكل دائم؟"
     },
+    "deleteMultiQuestions": {
+      "en": "Do you want to delete the questions permanently?",
+      "fr": "Voulez-vous supprimer définitivement les questions ?",
+      "ar": "هل تريد حذف السؤال بشكل دائم؟"
+    },
     "deleteQuestionLabel": {
       "en": "Delete Question",
       "fr": "Supprimer la question",
+      "ar": "حذف السؤال"
+    },
+    "deleteQuestionsLabel": {
+      "en": "Delete Questions",
+      "fr": "Supprimer la questions",
       "ar": "حذف السؤال"
     }
     }

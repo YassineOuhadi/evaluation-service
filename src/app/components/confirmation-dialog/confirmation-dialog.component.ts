@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { ApiService } from '../../new-que.service';
+import { AppService } from '../../app.service';
 import { Observable } from 'rxjs';
 import { Subscription, interval } from 'rxjs';
 import { QuestionType, 
@@ -37,17 +37,18 @@ import { QuestionType,
     ]),
   ]
 })
+
 export class ConfirmationDialogComponent implements OnInit{
 
   currentLanguage = 'en';
   content: any;
 
   deleteInAllCourses = true;
-    selectedCourses: number[] = [];
-  confirmedDeleteCourses = false; // New property to track whether courses deletion is confirmed
+  selectedCourses: number[] = [];
+  confirmedDeleteCourses = false; 
 
   constructor(private http: HttpClient, 
-    @Inject(MAT_DIALOG_DATA) public data: { question: QuestionObj["question"]; currentLanguage: string } ,
+    @Inject(MAT_DIALOG_DATA) public data: { questions: QuestionObj[]; currentLanguage: string } ,
     public dialogRef: MatDialogRef<ConfirmationDialogComponent> ) {
     this.http.get("assets/questionsList.json").subscribe((res: any) => {
       this.content = res;
@@ -55,10 +56,13 @@ export class ConfirmationDialogComponent implements OnInit{
   }
 
   ngOnInit(): void {
-this.currentLanguage = this.data.currentLanguage;
-    console.log('Question Data:', this.data);
-        this.initializeSelectedCourses();
-        if(this.data.question.courses.length === 0) this.confirmedDeleteCourses = true;
+    this.currentLanguage = this.data.currentLanguage;
+    console.log("dialog data", this.data);
+
+    if(this.data.questions.length === 1) {
+      this.initializeSelectedCourses();
+      if(this.data.questions[0]["question"].courses.length === 0) this.confirmedDeleteCourses = true;
+    }
   }
 
   getLayoutDirection(): string {
@@ -66,7 +70,7 @@ this.currentLanguage = this.data.currentLanguage;
   }
   
   rightToLeft(): boolean {
-    return this.currentLanguage !== 'ar'; // Show outline for all languages except Arabic.
+    return this.currentLanguage !== 'ar';
   }
 
   changeLanguage(language: string) {
@@ -74,11 +78,7 @@ this.currentLanguage = this.data.currentLanguage;
   } 
 
   initializeSelectedCourses(): void {
-    this.selectedCourses = this.data.question.courses.map(course => course.id);
-  }
-
-  closeDialog(): void {
-    this.dialogRef.close();
+    this.selectedCourses = this.data.questions[0]["question"].courses.map(course => course.id);
   }
 
   toggleCourse(courseId: number): void {
@@ -91,5 +91,9 @@ this.currentLanguage = this.data.currentLanguage;
 
   confirmCoursesDeletion(): void {
     this.confirmedDeleteCourses = true;
+  }
+
+  closeDialog(): void {
+    this.dialogRef.close();
   }
 }

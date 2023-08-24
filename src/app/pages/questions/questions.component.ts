@@ -6,26 +6,29 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import {map, startWith} from 'rxjs/operators';
-import {FormControl} from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from '../../components/confirmation-dialog/confirmation-dialog.component';
 import { PlayModalComponent } from '../../components/play-modal/play-modal.component';
-import { TableService } from './table.service';
-import { ApiService } from '../../new-que.service';
-import { QuestionType, 
-         Option, 
-         Block, 
-         Course,
-         HiddenWord, 
-         QuestionObj, 
-         SelectedBlockInfo, 
-         Language, 
-         Exam
-       } from '../../interfaces';
+import { AppService } from '../../app.service';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
+import { forkJoin } from 'rxjs';
+
+import {
+  QuestionType,
+  Option,
+  Block,
+  Course,
+  HiddenWord,
+  QuestionObj,
+  SelectedBlockInfo,
+  Language,
+  Exam
+} from '../../interfaces';
+
 @Component({
   selector: 'app-questions-list',
   templateUrl: './questions.component.html',
@@ -48,43 +51,44 @@ import { SelectionModel } from '@angular/cdk/collections';
   ]
 })
 
-export class QuestionsComponent implements OnInit{
+export class QuestionsComponent implements OnInit {
 
   loadingDuration = 2000;
   isLoading = false;
 
   content: any;
   currentLanguage = 'en';
-  
+
   questionsList: QuestionObj[] = [];
-  displayedColumns: string[] = ['select','code', 'type', 'text', 'courses', 'play', 'edit', 'delete'];
+  displayedColumns: string[] = ['select', 'code', 'type', 'text', 'courses', 'play', 'edit', 'delete'];
   dataSource!: MatTableDataSource<QuestionObj>;
   languages: Language[] = [];
   courses: Course[] = [];
+  isTypeAutocompleteOpen = false;
+  isLanguageAutocompleteOpen = false;
+  isCourseAutocompleteOpen = false;
   languageControl = new FormControl();
   filteredLanguages!: Observable<Language[]>;
   courseControl = new FormControl();
   filteredCourses!: Observable<Course[]>;
-  typeControl = new FormControl(); // Create FormControl instance
-  questionTypes = Object.values(QuestionType); 
-  pageSize = 5;
+  typeControl = new FormControl();
+  questionTypes = Object.values(QuestionType);
+  pageSize = 10;
   pageIndex = 0;
   totalItems = 0;
-
   questionCodeFilter: string = '';
   selection = new SelectionModel<QuestionObj>(true, []);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private service: TableService,
     private loadingBarService: LoadingBarService,
-    private router: Router, public _MatPaginatorIntl: MatPaginatorIntl,
-    private http: HttpClient, 
-    private apiService: ApiService, 
-    private dialog: MatDialog)
-  {
-    this.http.get("assets/questionsList.json").subscribe((res:any)=>{
+    private router: Router,
+    public _MatPaginatorIntl: MatPaginatorIntl,
+    private http: HttpClient,
+    private apiService: AppService,
+    private dialog: MatDialog) {
+    this.http.get("assets/questionsList.json").subscribe((res: any) => {
       //debugger;
       this.content = res;
     });
@@ -93,48 +97,43 @@ export class QuestionsComponent implements OnInit{
   getLayoutDirection(): string {
     return this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
   }
-  
+
   rightToLeft(): boolean {
-    return this.currentLanguage !== 'ar'; // Show outline for all languages except Arabic.
+    return this.currentLanguage !== 'ar';
   }
 
   changeLanguage(language: string) {
     this.currentLanguage = language;
-  } 
+  }
 
   ngAfterViewInit(): void {
     this.loadQuestions();
     this._MatPaginatorIntl.itemsPerPageLabel = this.content.table.itemsPerPageLabel[this.currentLanguage];
-    //this._MatPaginatorIntl.firstPageLabel = 'your custom text 2';
-    //this._MatPaginatorIntl.itemsPerPageLabel = 'your custom text 3';
-    //this._MatPaginatorIntl.lastPageLabel = 'your custom text 4';
     this._MatPaginatorIntl.nextPageLabel = this.content.table.nextPageLabel[this.currentLanguage];
-    this._MatPaginatorIntl.previousPageLabel = this.content.table.previousPageLabel[this.currentLanguage]; 
+    this._MatPaginatorIntl.previousPageLabel = this.content.table.previousPageLabel[this.currentLanguage];
   }
 
-  ngOnInit(): void { 
-    
+  ngOnInit(): void {
     //this.loadQuestions();
     this.apiService.getLang().subscribe(
       (languages) => {
         this.languages = languages;
         this.filteredLanguages = this.languageControl.valueChanges.pipe(
           startWith(''),
-          map((value) => this._filterLanguages(value?.toString().toLowerCase() ?? '')) // Ensure value is a string
-        );       
+          map((value) => this._filterLanguages(value?.toString().toLowerCase() ?? ''))
+        );
       },
       (error) => {
         console.error('Error while fetching languages:', error);
       }
-    ); 
-
+    );
     this.apiService.getCourses().subscribe(
       (courses) => {
         this.courses = courses;
         this.filteredCourses = this.courseControl.valueChanges.pipe(
           startWith(''),
-          map((value) => this._filterCourses(value?.toString().toLowerCase() ?? '')) // Ensure value is a string
-        );  
+          map((value) => this._filterCourses(value?.toString().toLowerCase() ?? ''))
+        );
       },
       (error) => {
         console.error('Error while fetching courses:', error);
@@ -165,15 +164,13 @@ export class QuestionsComponent implements OnInit{
   loadQuestions() {
     this.loadingBarService.start();
     this.isLoading = true;
-
-    const sortAttribute = this.sort.active || 'id' ;
-    const sortDirection = this.sort.direction || 'asc' ;
+    const sortAttribute = this.sort.active || 'id';
+    const sortDirection = this.sort.direction || 'asc';
     const languageId = this.languageControl.value ? this.languageControl.value.id : undefined;
     const courseId = this.courseControl.value ? this.courseControl.value.id : undefined;
-    const type = this.typeControl.value ? this.typeControl.value : undefined ;
-
+    const type = this.typeControl.value ? this.typeControl.value : undefined;
     this.apiService.getAllQuestions(
-      this.pageIndex ,
+      this.pageIndex,
       this.pageSize,
       this.questionCodeFilter,
       languageId,
@@ -192,13 +189,13 @@ export class QuestionsComponent implements OnInit{
             ];
           }
 
-          if(item.type === QuestionType.FILL_BLANKS) {
+          if (item.type === QuestionType.FILL_BLANKS) {
             item.question.textBlocks = this.parseTextIntoBlocks(item.question.text);
           }
 
-          if((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
+          if ((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
             item.question.HiddenWord?.forEach((word: HiddenWord) => {
-              word.isDraggable =true;
+              word.isDraggable = true;
             })
           }
 
@@ -211,7 +208,7 @@ export class QuestionsComponent implements OnInit{
           item.question.isCorrect = false;
 
           item.question.isWithTiming = item.question.isWithTiming;
-          if(item.question.isWithTiming) item.question.duration = item.question.duration;
+          if (item.question.isWithTiming) item.question.duration = item.question.duration;
 
           item.question.isValidate = false;
           item.question.courses = item.question.courses || []; // Ensure 'courses' property is initialized
@@ -240,24 +237,26 @@ export class QuestionsComponent implements OnInit{
   }
 
   onSortChange(event: Sort) {
-    //this.sort = event;
+    console.log('Sorting attribute:', event.active);
+    console.log('Sorting direction:', event.direction);
     this.loadQuestions();
   }
-  
-  playQuestion(queObj: QuestionObj) {
+
+  playQuestion(event: Event, queObj: QuestionObj) {
+    event.stopPropagation();
     const dialogRef = this.dialog.open(PlayModalComponent, {
       width: '600px',
       //data: queObj,
       data: {
-      questionObj: queObj, // Pass your question object here
-      currentLanguage: this.currentLanguage, // Pass the current language value
+        questionObj: queObj, // Pass your question object here
+        currentLanguage: this.currentLanguage, // Pass the current language value
       },
     });
     dialogRef.afterClosed().subscribe(result => {
       queObj.question.isCorrect = false;
       queObj.question.isValidate = false;
-      if((queObj.type === QuestionType.CHOICE || queObj.type === QuestionType.TRUE_FALSE) && queObj.question.options)
-      queObj.question.options.forEach((option) => (option.isSelected = false));
+      if ((queObj.type === QuestionType.CHOICE || queObj.type === QuestionType.TRUE_FALSE) && queObj.question.options)
+        queObj.question.options.forEach((option) => (option.isSelected = false));
 
     });
   }
@@ -271,7 +270,8 @@ export class QuestionsComponent implements OnInit{
     });
   }
 
-  editQuestion(question: QuestionObj) {
+  editQuestion(event: Event, question: QuestionObj) {
+    event.stopPropagation();
     this.loadingBarService.start();
     this.isLoading = true
     this.router.navigate(['/create'], { queryParams: { questionId: question.question.id, lang: this.currentLanguage } }).then(() => {
@@ -280,57 +280,75 @@ export class QuestionsComponent implements OnInit{
     });
   }
 
-  deleteQuestion(question: QuestionObj) {
+  deleteSingleQuestion(question: QuestionObj): Observable<void> {
+    return new Observable<void>((observer) => {
+      this.apiService.deleteQuestion(question.question.id).subscribe(
+        (response) => {
+          console.log(response.message);
+          this.questionsList = this.questionsList.filter(q => q !== question);
+          this.dataSource.data = this.questionsList;
+
+          observer.next();
+          observer.complete();
+        },
+        (error) => {
+          console.error('Error deleting question:', error);
+          observer.error(error);
+        }
+      );
+    });
+  }
+
+  deleteQuestion(event: Event, ...questions: QuestionObj[]) {
+    event.stopPropagation();
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
       data: {
-      ... question, // Pass your question object here
-      currentLanguage: this.currentLanguage, // Pass the current language value
+        questions,
+        currentLanguage: this.currentLanguage,
       },
       //data: question,
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.confirmed) {
+
         if (result.deleteQuestion) {
+
           this.loadingBarService.start();
           this.isLoading = true;
-          this.apiService.deleteQuestion(question.question.id).subscribe(
-            (response) => {
-              console.log(response.message);
-              this.questionsList = this.questionsList.filter(q => q !== question);
-              this.dataSource.data = this.questionsList;
-  
-              const loadingTimer = setTimeout(() => {
-                this.loadingBarService.complete();
-                this.isLoading = false;
-                clearTimeout(loadingTimer);
-              }, this.loadingDuration);
+
+          const deleteObservables: Observable<void>[] = questions.map(question =>
+            this.deleteSingleQuestion(question)
+          );
+
+          forkJoin(deleteObservables).subscribe(
+            () => {
+              this.loadingBarService.complete();
+              this.isLoading = false;
             },
             (error) => {
-              console.error('Error deleting question:', error);
-  
-              const loadingTimer = setTimeout(() => {
-                this.loadingBarService.complete();
-                this.isLoading = false;
-                clearTimeout(loadingTimer);
-              }, this.loadingDuration);
+              console.error('Error deleting questions:', error);
+              this.loadingBarService.complete();
+              this.isLoading = false;
             }
           );
-        } else if (result.deleteCourses && result.deleteCourses.length > 0) {
+        }
+
+        else if (result.deleteCourses && result.deleteCourses.length > 0) {
           const courseIdArray: number[] = result.deleteCourses || [];
           courseIdArray.forEach(courseId => {
-            const deleteData: {courseId: number, questionId: number} = {
+            const deleteData: { courseId: number, questionId: number } = {
               courseId: courseId,
-              questionId: question.question.id
+              questionId: questions[0].question.id
             };
             this.loadingBarService.start();
             this.isLoading = true;
             this.apiService.deleteQuestionFromCourse(deleteData).subscribe(
               () => {
-                question.question.courses = question.question.courses.filter(course =>
+                questions[0].question.courses = questions[0].question.courses.filter(course =>
                   !result.deleteCourses.includes(course.id)
                 );
-  
+
                 const loadingTimer = setTimeout(() => {
                   this.loadingBarService.complete();
                   this.isLoading = false;
@@ -339,7 +357,6 @@ export class QuestionsComponent implements OnInit{
               },
               (error) => {
                 console.error('Error deleting question:', error);
-  
                 const loadingTimer = setTimeout(() => {
                   this.loadingBarService.complete();
                   this.isLoading = false;
@@ -349,6 +366,8 @@ export class QuestionsComponent implements OnInit{
             );
           });
         }
+
+
       }
     });
   }
@@ -379,20 +398,20 @@ export class QuestionsComponent implements OnInit{
       if (word.startsWith('**')) {
         if (word.endsWith('**')) {
           const trimmedWord = word.substring(2, word.length - 2);
-          blocks.push({ word: trimmedWord, specialCharacter, isSelected: true});
-        } 
-        else if(specialCharacters.some(specialChar => word.endsWith(`**${specialChar}`))){
+          blocks.push({ word: trimmedWord, specialCharacter, isSelected: true });
+        }
+        else if (specialCharacters.some(specialChar => word.endsWith(`**${specialChar}`))) {
           const trimmedWord = word.substring(2, word.length - 3);
-          const lastChar = word[word.length - 1]; 
+          const lastChar = word[word.length - 1];
           specialCharacter = specialCharacters.includes(lastChar) ? lastChar : undefined;
           blocks.push({ word: trimmedWord, specialCharacter, isSelected: true });
-        } 
+        }
         else {
           wordBuffer = word.substring(2);
           isSelected = true;
         }
-      } 
-      
+      }
+
       else if (word.endsWith('**')) {
         wordBuffer += ` ${word.substring(0, word.length - 2)}`;
         const lastChar = word[word.length - 1]; // Check the character before **
@@ -423,11 +442,11 @@ export class QuestionsComponent implements OnInit{
       }
       else if (isSelected) {
         wordBuffer += ` ${word}`;
-      } 
+      }
       else {
         const lastChar = word[word.length - 1];
         specialCharacter = specialCharacters.includes(lastChar) ? lastChar : undefined;
-        if(specialCharacter){
+        if (specialCharacter) {
           word = word.substring(0, word.length - 1);
         }
         blocks.push({ word, specialCharacter, isSelected: false });
@@ -436,39 +455,44 @@ export class QuestionsComponent implements OnInit{
     if (wordBuffer !== '') {
       blocks.push({ word: wordBuffer.trim(), isSelected });
     }
-    return  blocks ;
+    return blocks;
   }
 
+  isMultiSelectEnabled(): boolean {
+    return !this.hasQuestionsWithCourses();
+  }
 
+  hasQuestionsWithCourses(): boolean {
+    return this.questionsList.some(question => question.question.courses.length > 0);
+  }
 
-
-  deleteSelectedQuestions() {
-  const selectedQuestions = this.selection.selected;
-
-  // Perform deletion logic for selectedQuestions array
-
-  // Clear the selection
-  this.selection.clear();
-}
-
-
-
+  deleteSelectedQuestions(event: Event) {
+    const selectedQuestions: QuestionObj[] = this.selection.selected;
+    if (selectedQuestions.length === 1) {
+      this.deleteQuestion(event, selectedQuestions[0]);
+    } else {
+      this.deleteQuestion(event, ...selectedQuestions);
+    }
+    this.selection.clear();
+  }
 
   isAllSelected() {
-    console.log(this.selection.selected.length);
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  toggleAllSelection() {
-  if (this.isAllSelected()) {
-    this.selection.clear();
-  } else {
-    this.dataSource.data.forEach((row) => this.selection.select(row));
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
-}
 
+  isQuestionWithCoursesSelected(): boolean {
+    return this.selection.selected.some(row => row.question.courses.length > 0);
+  }
 
-
+  isRowDisabled(row: QuestionObj) {
+    return !this.selection.isSelected(row) && (this.isQuestionWithCoursesSelected() || (this.selection.hasValue() && row.question.courses.length > 0));
+  }
 }

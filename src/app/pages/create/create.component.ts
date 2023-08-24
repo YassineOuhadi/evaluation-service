@@ -2,54 +2,23 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../../new-que.service';
-import {FormControl} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { AppService } from '../../app.service';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
-import { QuestionType, 
-         Option, 
-         Block, 
-         Course,
-         HiddenWord, 
-         QuestionObj, 
-         SelectedBlockInfo, 
-         Language, 
-         Exam
-       } from '../../interfaces';
-
-interface Question {
-  id?: number;
-  type: QuestionType;
-  code: string;
-  text: string; 
-  correctAnswerTipText: string;
-  incorrectAnswerTipText: string;
-  coursesIds: number[];language_fk: number;
-  isMultipleChoice?:boolean;
-  isCorrect?: boolean;
-  isDragWords?:boolean;
-  options?: {
-    id: number;
-    text: string;
-    isCorrect: boolean
-  }[];
-  /*language: {
-    id: number;
-    name: string;
-  };*/
-
-  isWithTiming: boolean;
-  duration?: number;
-}
-
-interface Text {
-  blocks: Block[];
-}
+import {
+  CreateQuestionData,
+  Text,
+  QuestionType,
+  Block,
+  Course,
+  Language,
+} from '../../interfaces';
 
 @Component({
   selector: 'app-question-new',
@@ -89,9 +58,9 @@ export class CreateComponent implements OnInit {
   activeTabIndex = 0;
   isQteOpen = false;
   activeQuestionType: QuestionType | null = null;
-  sectionStates: { [key: string]: boolean| string[] } = {};
+  sectionStates: { [key: string]: boolean | string[] } = {};
 
-  questions: Question [] = [];
+  questions: CreateQuestionData[] = [];
   questionTextContents: { [key: string]: string } = {};
   questionTextObj: { [key: string]: Text } = {};
   words: string[] = [];
@@ -101,7 +70,7 @@ export class CreateComponent implements OnInit {
   selectedCourses: number[] = [];
   filteredLanguages!: Observable<Language[]>;
   languageControl = new FormControl();
-  
+
   currentStepIndex = 0; // Initialize with the index of the first step
 
   // Function to handle step changes
@@ -114,27 +83,27 @@ export class CreateComponent implements OnInit {
     private loadingBarService: LoadingBarService,
     private snackBar: MatSnackBar,
     private httpClient: HttpClient,
-    private apiService: ApiService,private http: HttpClient,
+    private apiService: AppService, private http: HttpClient,
     private router: Router,
-      private route: ActivatedRoute
+    private route: ActivatedRoute
   ) {
 
-    this.http.get("assets/modalConstants.json").subscribe((res:any)=>{
+    this.http.get("assets/modalConstants.json").subscribe((res: any) => {
       //debugger;
       this.content = res;
     })
-    
+
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-    const questionId = params['questionId'];
-    if(params['lang']) this.currentLanguage = params['lang'];
-    if (questionId) {
-      this.handleEditQuestion(questionId);
-    } else {
-      this.handleCreateQuestion();
-    }
+      const questionId = params['questionId'];
+      if (params['lang']) this.currentLanguage = params['lang'];
+      if (questionId) {
+        this.handleEditQuestion(questionId);
+      } else {
+        this.handleCreateQuestion();
+      }
     });
   }
 
@@ -196,7 +165,7 @@ export class CreateComponent implements OnInit {
         this.filteredLanguages = this.languageControl.valueChanges.pipe(
           startWith(''),
           map((value) => this._filterLanguages(value?.toString().toLowerCase() ?? '')) // Ensure value is a string
-        );        
+        );
       },
       (error) => {
         console.error('Error while fetching languages:', error);
@@ -227,67 +196,67 @@ export class CreateComponent implements OnInit {
     );
 
     this.apiService.findQuestion(questionId).subscribe(
-    (response: any) => {
-      const questionData = response.question;
-      let questionType = response.type as QuestionType;
-      var mappedQuestion: Question;
+      (response: any) => {
+        const questionData = response.question;
+        let questionType = response.type as QuestionType;
+        var mappedQuestion: CreateQuestionData;
 
-      mappedQuestion = {
-        id: questionData.id,
-        type: questionType,
-        code: questionData.code,
-        text: questionData.text,
-        correctAnswerTipText: questionData.correctAnswerTipText,
-        incorrectAnswerTipText: questionData.incorrectAnswerTipText,
-        coursesIds: questionData.courses.map((course: Course) => course.id),
-        language_fk: questionData.language.id,
-        isWithTiming: questionData.withTiming,
-        duration: questionData.duration
-      };
+        mappedQuestion = {
+          id: questionData.id,
+          type: questionType,
+          code: questionData.code,
+          text: questionData.text,
+          correctAnswerTipText: questionData.correctAnswerTipText,
+          incorrectAnswerTipText: questionData.incorrectAnswerTipText,
+          coursesIds: questionData.courses.map((course: Course) => course.id),
+          language_fk: questionData.language.id,
+          isWithTiming: questionData.withTiming,
+          duration: questionData.duration
+        };
 
-      if (questionType === QuestionType.CHOICE) {
-        mappedQuestion.isMultipleChoice = questionData.multipleChoice;
-        
-        mappedQuestion.options = questionData.options.map((option: any) => {
-          const optionText = option.text.replace(/^\d+\-\s*/, '');
-          return {
-            id: option.id,
-            text: optionText,
-            isCorrect: option.correct
-          };
-        });
+        if (questionType === QuestionType.CHOICE) {
+          mappedQuestion.isMultipleChoice = questionData.multipleChoice;
 
+          mappedQuestion.options = questionData.options.map((option: any) => {
+            const optionText = option.text.replace(/^\d+\-\s*/, '');
+            return {
+              id: option.id,
+              text: optionText,
+              isCorrect: option.correct
+            };
+          });
+
+        }
+
+        else if (questionType === QuestionType.TRUE_FALSE) {
+          mappedQuestion.isCorrect = questionData.correct;
+        }
+
+        else if (questionType === QuestionType.FILL_BLANKS) {
+          mappedQuestion.isDragWords = questionData.dragWords;
+        }
+
+        console.log("mapped question", mappedQuestion);
+
+        this.questions = [mappedQuestion];
+
+        this.isQteOpen = true;
+        this.activeQuestionType = questionType;
+
+        if (questionType === QuestionType.FILL_BLANKS) {
+          //ontextaria fct
+          this.questionTextContents[questionType] = questionData.text;
+          this.questionTextObj[questionType] = this.parseTextIntoBlocks(questionData.text);
+          this.updateWordPreview();
+        }
+
+        this.selectedCourses = questionData.courses.map((course: Course) => course.id);
+
+
+      },
+      (e) => {
+        console.error('Error while sending data:', e.error.message);
       }
-
-      else if (questionType === QuestionType.TRUE_FALSE) {
-        mappedQuestion.isCorrect = questionData.correct;
-      }
-
-       else if (questionType === QuestionType.FILL_BLANKS) {
-        mappedQuestion.isDragWords = questionData.dragWords;
-      }
-
-      console.log("mapped question", mappedQuestion);
-      
-      this.questions = [mappedQuestion];
-
-      this.isQteOpen = true;
-      this.activeQuestionType = questionType;
-
-      if(questionType === QuestionType.FILL_BLANKS) {
-        //ontextaria fct
-        this.questionTextContents[questionType] = questionData.text;
-        this.questionTextObj[questionType] = this.parseTextIntoBlocks(questionData.text);
-        this.updateWordPreview();
-      }
-
-      this.selectedCourses = questionData.courses.map((course: Course) => course.id);
-
-
-    },
-    (e) => {
-      console.error('Error while sending data:', e.error.message);
-    }
     );
 
     this.apiService.getCourses().subscribe(
@@ -314,12 +283,12 @@ export class CreateComponent implements OnInit {
   displayLanguageName(language: Language): string {
     return language && language.name ? language.name : '';
   }
-  
-  getQueType(question: Question): any {
+
+  getQueType(question: CreateQuestionData): any {
     let queInfo: any;
     switch (question.type) {
       case QuestionType.CHOICE:
-        if(question.isMultipleChoice){
+        if (question.isMultipleChoice) {
           queInfo = {
             name: this.content.questions.singleMultipleChoice.name[this.currentLanguage],
             description: this.content.questions.singleMultipleChoice.description[this.currentLanguage],
@@ -341,7 +310,7 @@ export class CreateComponent implements OnInit {
         };
         break;
       case QuestionType.FILL_BLANKS:
-        if( question.isDragWords){
+        if (question.isDragWords) {
           queInfo = {
             name: this.content.questions.dragAndFill.name[this.currentLanguage],
             description: this.content.questions.dragAndFill.description[this.currentLanguage],
@@ -355,7 +324,7 @@ export class CreateComponent implements OnInit {
           };
         }
         break;
-        case QuestionType.MATCHING: 
+      case QuestionType.MATCHING:
         queInfo = {
           name: this.content.questions.matchingItems.name[this.currentLanguage],
           description: this.content.questions.matchingItems.description[this.currentLanguage],
@@ -375,25 +344,25 @@ export class CreateComponent implements OnInit {
   /* Init */
 
   /* Display */
-  exit(){
+  exit() {
     this.router.navigateByUrl('/questions');
   }
-  
+
   getLayoutDirection(): string {
     return this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
   }
-  
+
   rightToLeft(): boolean {
     return this.currentLanguage !== 'ar'; // Show outline for all languages except Arabic.
   }
 
   changeLanguage(language: string) {
     this.currentLanguage = language;
-  }  
+  }
 
   onTabChanged(event: MatTabChangeEvent): void {
     if (this.activeTabIndex === 1) {
-        //console.log('Selected Sublanguages:', this.selectedSubLangIds);
+      //console.log('Selected Sublanguages:', this.selectedSubLangIds);
     }
     this.activeTabIndex = event.index;
   }
@@ -405,18 +374,19 @@ export class CreateComponent implements OnInit {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
     });
-  }  
+  }
 
   toggleQuestion(questionType: QuestionType): void {
-    if(this.isEditQuestion) return;
-    if( this.activeQuestionType === questionType){
+    if (this.isEditQuestion) return;
+    if (this.activeQuestionType === questionType) {
       this.isQteOpen = false;
       this.activeQuestionType = null;
     } else {
-      this.isQteOpen = true;this.activeQuestionType = questionType;
-    }       
+      this.isQteOpen = true; this.activeQuestionType = questionType;
+    }
+    if (this.activeQuestionType === QuestionType.FILL_BLANKS) this.questionTextContents[this.activeQuestionType] = '';
   }
-  
+
   toggleMedia(questionType: QuestionType): void {
     this.sectionStates[`media_${questionType}`] = !this.sectionStates[`media_${questionType}`];
   }
@@ -498,18 +468,18 @@ export class CreateComponent implements OnInit {
         if (word.endsWith('**')) {
           const trimmedWord = word.substring(2, word.length - 2);
           blocks.push({ word: trimmedWord, specialCharacter, isSelected: true });
-        } 
-        else if(specialCharacters.some(specialChar => word.endsWith(`**${specialChar}`))){
+        }
+        else if (specialCharacters.some(specialChar => word.endsWith(`**${specialChar}`))) {
           const trimmedWord = word.substring(2, word.length - 3);
-          const lastChar = word[word.length - 1]; 
+          const lastChar = word[word.length - 1];
           specialCharacter = specialCharacters.includes(lastChar) ? lastChar : undefined;
           blocks.push({ word: trimmedWord, specialCharacter, isSelected: true });
-        } 
+        }
         else {
           wordBuffer = word.substring(2);
           isSelected = true;
         }
-      } 
+      }
       else if (word.endsWith('**')) {
         wordBuffer += ` ${word.substring(0, word.length - 2)}`;
         const lastChar = word[word.length - 1]; // Check the character before **
@@ -540,11 +510,11 @@ export class CreateComponent implements OnInit {
       }
       else if (isSelected) {
         wordBuffer += ` ${word}`;
-      } 
+      }
       else {
         const lastChar = word[word.length - 1];
         specialCharacter = specialCharacters.includes(lastChar) ? lastChar : undefined;
-        if(specialCharacter){
+        if (specialCharacter) {
           word = word.substring(0, word.length - 1);
         }
         blocks.push({ word, specialCharacter, isSelected: false });
@@ -555,7 +525,7 @@ export class CreateComponent implements OnInit {
     }
     return { blocks };
   }
-  
+
   parseBlocksIntoText(textObj: Text): string {
     const textBlocks = textObj.blocks.map(block => {
       let wordWithSpecialCharacter = block.word;
@@ -572,30 +542,30 @@ export class CreateComponent implements OnInit {
     this.updateWordPreview();
     console.log(this.questionTextObj[questionType]);
   }
-  
+
   isWordSelected(questionType: QuestionType, index: number): boolean {
     const selectedWordsKey = `selectedWords_${questionType}`;
     this.sectionStates[selectedWordsKey] = this.sectionStates[selectedWordsKey] || [];
     const selectedWords = this.sectionStates[selectedWordsKey] as string[];
     const words = this.questionTextContents[questionType]?.split(/\s+/) || []; // Split the text into words
-    
+
     if (index >= 0 && index < words.length) {
       const word = words[index];
       return selectedWords.includes(index.toString()) || (word.startsWith('**') && word.endsWith('**'));
     }
-    
+
     return selectedWords.includes(index.toString());
   }
 
   updateWordPreview(): void {
     if (this.activeQuestionType) {
       const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
-      if(!questionData) return;
+      if (!questionData) return;
       questionData.text = this.questionTextContents[this.activeQuestionType];
     }
   }
- 
-  togglePreview(questionType: QuestionType): void {   
+
+  togglePreview(questionType: QuestionType): void {
     const isTextAreaShownKey = `isTextAreaShown_${questionType}`;
     const showPreviewKey = `showPreview_${questionType}`;
     this.sectionStates[isTextAreaShownKey] = !this.sectionStates[isTextAreaShownKey];
@@ -610,21 +580,21 @@ export class CreateComponent implements OnInit {
 
   toggleWordSelection(questionType: QuestionType, block: Block): void {
     block.isSelected = !block.isSelected;
-    this.questionTextContents[questionType]= this.parseBlocksIntoText(this.questionTextObj[questionType]);
+    this.questionTextContents[questionType] = this.parseBlocksIntoText(this.questionTextObj[questionType]);
     this.updateWordPreview();
 
     if (this.questionTextObj[questionType].blocks.filter((o: any) => o.isSelected === true).length === 0) {
-      this.showToast('selectWord',this.currentLanguage);
-    }    
+      this.showToast('selectWord', this.currentLanguage);
+    }
   }
   /* Fill Blacks & Drag Words */
 
   /* Save Question */
   validateQue(): boolean {
     const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
-    if(!this.activeQuestionType || !questionData) return false;
-  
-    if(!questionData.code.trim()) {
+    if (!this.activeQuestionType || !questionData) return false;
+
+    if (!questionData.code.trim()) {
       return false;
     }
 
@@ -632,7 +602,7 @@ export class CreateComponent implements OnInit {
       return false;
     }
 
-    if(this.activeQuestionType === QuestionType.CHOICE) {
+    if (this.activeQuestionType === QuestionType.CHOICE) {
       if (!questionData.options) {
         return false;
       }
@@ -662,7 +632,7 @@ export class CreateComponent implements OnInit {
 
     if (this.activeQuestionType === QuestionType.FILL_BLANKS) {
       const activeQuestionText = this.questionTextContents[this.activeQuestionType];
-    
+
       if (!activeQuestionText || activeQuestionText.trim() === '') {
         return false;
       }
@@ -676,9 +646,9 @@ export class CreateComponent implements OnInit {
     }
 
     if (questionData.isWithTiming) {
-      if(!questionData.duration) return false;
+      if (!questionData.duration) return false;
     }
-  
+
     return true;
   }
 
@@ -687,7 +657,7 @@ export class CreateComponent implements OnInit {
     if (this.isSaving) {
       return;
     }
-  
+
     const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
     if (!questionData) return;
 
@@ -700,13 +670,13 @@ export class CreateComponent implements OnInit {
     }
 
     questionData.coursesIds = this.selectedCourses;
-    if(!this.isEditQuestion) questionData.language_fk = this.languageControl.value.id;
-  
+    if (!this.isEditQuestion) questionData.language_fk = this.languageControl.value.id;
+
     this.loadingBarService.start();
     this.isSaving = true;
 
-    if(!this.isEditQuestion) this.sendDataToBackend(questionData);
-    else if(this.isEditQuestion) this.editQuestion(questionData);
+    if (!this.isEditQuestion) this.sendDataToBackend(questionData);
+    else if (this.isEditQuestion) this.editQuestion(questionData);
   }
 
   getLanguages(): void {
@@ -719,19 +689,19 @@ export class CreateComponent implements OnInit {
       }
     );
   }
-  
+
   sendDataToBackend(questionData: any): void {
-    console.log("question data",questionData);
-    this.apiService.postQuestionData(questionData).subscribe(
+    console.log("question data", questionData);
+    this.apiService.createQuestion(questionData).subscribe(
       (response) => {
         const loadingTimer = setTimeout(() => {
           console.log('Response from API:', response.message);
           this.showToast('questionCreatedSuccessfully', this.currentLanguage);
           this.loadingBarService.complete();
           this.isSaving = false;
-          
+
           this.router.navigateByUrl('/questions');
-          
+
           clearTimeout(loadingTimer);
         }, this.loadingDuration);
       },
@@ -758,13 +728,13 @@ export class CreateComponent implements OnInit {
           this.showToast('questionCreatedSuccessfully', this.currentLanguage);
           //this.loadingBarService.complete();
           //this.isSaving = false;
-          
+
           //this.router.navigateByUrl('/questions');
           this.router.navigate(['/questions'], { queryParams: { lang: this.currentLanguage } }).then(() => {
             this.loadingBarService.complete();
             this.isLoading = false;
           });
-          
+
           clearTimeout(loadingTimer);
         }, this.loadingDuration);
       },
@@ -785,38 +755,38 @@ export class CreateComponent implements OnInit {
 
   areLangInvalid(): void {
     const selectedLanguage = this.languageControl.value;
-    if(!selectedLanguage || !this.languages.some(language => language.id === selectedLanguage.id)) 
-    this.showToast("selectLanguage", this.currentLanguage);
+    if (!selectedLanguage || !this.languages.some(language => language.id === selectedLanguage.id))
+      this.showToast("selectLanguage", this.currentLanguage);
     return;
   }
 
-  areDataInvalid(): void {    
+  areDataInvalid(): void {
     const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
-    if(!this.activeQuestionType || !questionData) return;
+    if (!this.activeQuestionType || !questionData) return;
     this.validateQuestion(this.activeQuestionType);
-    if(!questionData.code.trim()) {
-      questionData.code = '';
+
+    questionData.code = questionData.code.trim();
+    questionData.text = questionData.text.trim();
+    questionData.correctAnswerTipText = questionData.correctAnswerTipText.trim();
+    questionData.incorrectAnswerTipText = questionData.incorrectAnswerTipText.trim();
+
+
+    if (questionData.code === '') return;
+    else if (questionData.text === '' && this.activeQuestionType !== QuestionType.FILL_BLANKS) {
       return;
     }
 
-    else if (!questionData.text.trim() && this.activeQuestionType !== QuestionType.FILL_BLANKS) {
-      questionData.text = ''
-      return;
-    }
+    else if (this.activeQuestionType === QuestionType.CHOICE && !this.areOpenOptionsInvalid()) return;
+    else if (this.activeQuestionType === QuestionType.FILL_BLANKS && !this.areTextBlockInvalid()) return;
 
-    else if(this.activeQuestionType === QuestionType.CHOICE && !this.areOpenOptionsInvalid()) return;
-    else if(this.activeQuestionType === QuestionType.FILL_BLANKS && !this.areTextBlockInvalid()) return;
-  
-    else if (!questionData.incorrectAnswerTipText.trim() || !questionData.correctAnswerTipText.trim()) {
-      if(!questionData.incorrectAnswerTipText.trim()) questionData.incorrectAnswerTipText = '';
-      if(!questionData.correctAnswerTipText.trim()) questionData.correctAnswerTipText = '';
-      if(!this.isTipsOpen(this.activeQuestionType)) this.toggleTips(this.activeQuestionType);
+    else if (questionData.correctAnswerTipText === '' || questionData.incorrectAnswerTipText === '') {
+      if (!this.isTipsOpen(this.activeQuestionType)) this.toggleTips(this.activeQuestionType);
       return;
     }
 
     if (questionData.isWithTiming) {
-      if(!questionData.duration) {
-        if(!this.isSettingsOpen(this.activeQuestionType)) this.toggleSettings(this.activeQuestionType);
+      if (!questionData.duration) {
+        if (!this.isSettingsOpen(this.activeQuestionType)) this.toggleSettings(this.activeQuestionType);
         return;
       }
     }
@@ -825,14 +795,15 @@ export class CreateComponent implements OnInit {
   }
 
   areTextBlockInvalid(): boolean {
+
     if (!this.activeQuestionType) {
       return false;
     }
-  
-    const activeQuestionText = this.questionTextContents[this.activeQuestionType];
-  
-    if (!activeQuestionText || activeQuestionText.trim() === '') {
-      this.questionTextContents[this.activeQuestionType] = '';
+
+
+    this.questionTextContents[this.activeQuestionType] = this.questionTextContents[this.activeQuestionType].trim();
+
+    if (!this.questionTextContents[this.activeQuestionType] || this.questionTextContents[this.activeQuestionType] === '') {
       if (!this.isBlockOpen(this.activeQuestionType)) {
         this.toggleBlock(this.activeQuestionType);
       }
@@ -844,11 +815,11 @@ export class CreateComponent implements OnInit {
       }
       this.showToast('selectWord', this.currentLanguage);
       return false;
-    } 
-    
+    }
+
     return true;
   }
-  
+
   areOpenOptionsInvalid(): boolean {
     if (!this.activeQuestionType) {
       return false;
@@ -866,7 +837,6 @@ export class CreateComponent implements OnInit {
           if (!this.isOptionOpen(activeQuestion.type, option.id)) {
             this.toggleOption(activeQuestion.type, option.id);
           }
-          option.text = '';
           return false;
         }
       }
@@ -892,9 +862,10 @@ export class CreateComponent implements OnInit {
     }
     return true;
   }
-  
+
   isOptionValid(option: any): boolean {
-    return option.text && option.text.trim() && option.text.trim() !== '';
+    option.text = option.text.trim();
+    return option.text && option.text !== '';
   }
 
   isCorrectTipTextValid(question: any): boolean {
@@ -906,7 +877,7 @@ export class CreateComponent implements OnInit {
   }
   /* Save Question */
 
-  cancelEdit(){
+  cancelEdit() {
     this.router.navigateByUrl('/questions');
   }
 }

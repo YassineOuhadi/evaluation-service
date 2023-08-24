@@ -5,46 +5,49 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
+export class AppService {
   private apiUrl = 'http://localhost:9091';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  postQuestionData(data: any): Observable<any> {
-    const url = this.apiUrl+'/question/new';
+  /* Create page */
+
+  createQuestion(data: any): Observable<any> {
+    const url = this.apiUrl + '/question/new';
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post(url, data, { headers });
   }
 
   editQuestion(data: any): Observable<any> {
-    const url = this.apiUrl+'/question/edit';
+    const url = this.apiUrl + '/question/edit';
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post(url, data, { headers });
   }
 
 
-  deleteQuestion(questionId: any): Observable<any> {
-  const url = `${this.apiUrl}/question/delete`; // Replace with your actual API endpoint
-  const headers = new HttpHeaders().set('Content-Type', 'application/json');
-  const params = new HttpParams().set('id', questionId);
-  
-  return this.http.post(url, null, { headers, params });
-}
+  /* List questions page */
 
-deleteQuestionFromCourse(data: any): Observable<any> {
-    const url = this.apiUrl+'/course/deleteQuestion';
+  deleteQuestion(questionId: any): Observable<any> {
+    const url = `${this.apiUrl}/question/delete`; // Replace with your actual API endpoint
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const params = new HttpParams().set('id', questionId);
+    return this.http.post(url, null, { headers, params });
+  }
+
+  deleteQuestionFromCourse(data: any): Observable<any> {
+    const url = this.apiUrl + '/course/deleteQuestion';
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post(url, data, { headers });
   }
 
   getLang(): Observable<any> {
-    const url = this.apiUrl+'/language/get';
+    const url = this.apiUrl + '/language/get';
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.get(url, { headers });
   }
 
   getCourses(): Observable<any> {
-    const url = this.apiUrl+'/course/get';
+    const url = this.apiUrl + '/course/get';
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.get(url, { headers });
   }
@@ -56,86 +59,90 @@ deleteQuestionFromCourse(data: any): Observable<any> {
     return this.http.get(url, { headers, params });
   }*/
 
-  getQuestionsByCourse(courseId: any): Observable<any> {
-  const url = `${this.apiUrl}/question/getByCourse`;
-  const headers = new HttpHeaders().set('Content-Type', 'application/json');
-
-  let params = new HttpParams();
-  if (courseId !== undefined) {
-    params = params.set('courseId', courseId);
-  }
-
-  return this.http.get(url, { headers, params });
-  }
-
   getAllQuestions(
-  page: number,
-  size: number,
-  questionCodeFilter?: string,
-  languageId?: number,
-  courseId?: number,
-  type?: string,
-  sortAttribute?: string,
-  sortDirection?: string
-): Observable<any> {
-  const url = `${this.apiUrl}/question/getAll`;
-  const headers = new HttpHeaders().set('Content-Type', 'application/json');
- 
-  let params = new HttpParams(); // Initialize HttpParams
+    page: number,
+    size: number,
+    questionCodeFilter?: string,
+    languageId?: number,
+    courseId?: number,
+    type?: string,
+    sortAttribute?: string,
+    sortDirection?: string
+  ): Observable<any> {
+    const url = `${this.apiUrl}/question/getAll`;
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
-  params = params.set('page', page.toString());
-  params = params.set('size', size.toString());
+    let params = new HttpParams(); // Initialize HttpParams
 
-  if(questionCodeFilter !== undefined) {
-    params = params.set('questionCodeFilter', questionCodeFilter.toString());
-  }
+    params = params.set('page', page.toString());
+    params = params.set('size', size.toString());
 
-  if (languageId !== undefined) {
-    params = params.set('languageId', languageId.toString());
-  }
-  if (courseId !== undefined) {
-    params = params.set('courseId', courseId.toString());
-  }
-  if (type) {
-    params = params.set('type', type);
-  }
-  if (sortAttribute) {
-    params = params.set('sortAttribute', sortAttribute);
-  }
-  if (sortDirection) {
-    params = params.set('sortDirection', sortDirection);
-  }
+    if (questionCodeFilter !== undefined) {
+      params = params.set('questionCodeFilter', questionCodeFilter.toString());
+    }
 
-  return this.http.get(url, { headers, params });
-}
+    if (languageId !== undefined) {
+      params = params.set('languageId', languageId.toString());
+    }
+    if (courseId !== undefined) {
+      params = params.set('courseId', courseId.toString());
+    }
+    if (type) {
+      params = params.set('type', type);
+    }
+    if (sortAttribute) {
+      params = params.set('sortAttribute', sortAttribute);
+    }
+    if (sortDirection) {
+      params = params.set('sortDirection', sortDirection);
+    }
+
+    return this.http.get(url, { headers, params });
+  }
 
 
   /* final exam */
+
   canTakeExam(campaignId: number, userId: number): Observable<boolean> {
-  const url = `${this.apiUrl}/exam/canTake`;
-  const headers = new HttpHeaders().set('Content-Type', 'application/json');
-  const params = new HttpParams()
-    .set('campaignId', campaignId)
-    .set('userId', userId);
-  return this.http.get<boolean>(url, { headers, params });
+    const url = `${this.apiUrl}/exam/canTake`;
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const params = new HttpParams()
+      .set('campaignId', campaignId)
+      .set('userId', userId);
+    return this.http.get<boolean>(url, { headers, params });
   }
+
   beginExam(data: any): Observable<any> {
     const url = `${this.apiUrl}/exam/begin`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post(url, data, { headers });
   }
+
   validateQuestion(data: any): Observable<any> {
     const url = `${this.apiUrl}/exam/validate`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post(url, data, { headers });
   }
+
   quitExam(examId: number): Observable<any> {
     const url = `${this.apiUrl}/exam/endExam`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     const params = new HttpParams().set('examId', examId.toString());
     return this.http.post(url, null, { headers, params });
   }
-  /* final exam */
+
+
+  /* Quiz */
+
+  getQuestionsByCourse(courseId: any): Observable<any> {
+    const url = `${this.apiUrl}/question/getByCourse`;
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    let params = new HttpParams();
+    if (courseId !== undefined) {
+      params = params.set('courseId', courseId);
+    }
+    return this.http.get(url, { headers, params });
+  }
 
   validateResponse(data: any): Observable<any> {
     const url = `${this.apiUrl}/question/validate`;
@@ -156,7 +163,4 @@ deleteQuestionFromCourse(data: any): Observable<any> {
     const params = new HttpParams().set('id', questionId);
     return this.http.get(url, { headers, params });
   }
-
-
-
 }

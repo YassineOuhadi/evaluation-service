@@ -120,12 +120,22 @@
 
           <footer [@slideDownUp]>
             <button  class="exit_btn rounded" mat-dialog-close [@fadeInOut]>{{ content.buttons.exitQuiz[this.currentLanguage] }}</button>
-            <button *ngIf="(data.questionObj.question.isValidate 
-                                && data.questionObj.question.isCorrect )" 
-                                class="next_btn rounded" [mat-dialog-close]="'finished'" [@fadeInOut]>
-                              {{ content.buttons.finishQuiz[this.currentLanguage] }}</button>
 
-            <button *ngIf="(!data.questionObj.question.isValidate) || (!data.questionObj.question.isCorrect)" class="next_btn rounded" (click)="validateAnswer()" [@fadeInOut]>{{ content.buttons.validate[this.currentLanguage] }}</button>
+            
+
+            
+
+            <ng-container *ngIf="(data.questionObj.question.isValidate 
+                                && data.questionObj.question.isCorrect ); else validateResponse">
+             <button 
+                                class="next_btn rounded" [mat-dialog-close]="'finished'">
+                              {{ content.buttons.finishQuiz[this.currentLanguage] }}</button>
+              </ng-container>
+
+              <ng-template #validateResponse>
+              <button #validateResponse class="next_btn rounded" (click)="validateAnswer()">{{ content.buttons.validate[this.currentLanguage] }}</button>
+              </ng-template>
+
           </footer>
         </mat-card-content>
       </mat-card>
