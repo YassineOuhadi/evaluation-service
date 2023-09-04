@@ -44,11 +44,14 @@
 
             <ng-container *ngIf="isQuizStarted">
 
-              <div class="content_box" *ngIf="questionsList.length>0">
-
-                <!---->
+              <div class="content_box" 
+                   [ngClass]="{  
+                                 'correct' : isMiniQuiz && questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate,
+                                 'incorrect' :isMiniQuiz && !questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate 
+                              }"
+                    *ngIf="questionsList.length>0">
                 <ng-container
-                  *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz; else responseValidateFeedback;">
+                  *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz;">
                   <span class="que_text">
                     {{currentQuestionNo+1}}.
                     <ng-container
@@ -66,29 +69,19 @@
                   </span>
                 </ng-container>
 
-                <ng-template #responseValidateFeedback>
-                  <div class="feedback" [ngClass]="{  'correct' : questionsList[this.currentQuestionNo].isCorrect,
-                                      'incorrect' : !questionsList[this.currentQuestionNo].isCorrect}">
-                    <ng-container *ngIf="questionsList[this.currentQuestionNo].isCorrect">
-                      {{ content.tipText.goodAnswer[this.currentLanguage] }}
-                    </ng-container>
-                    <ng-container *ngIf="!questionsList[this.currentQuestionNo].isCorrect">
-                      {{ content.tipText.wrongAnswer[this.currentLanguage] }}
-                    </ng-container>
-                  </div>
-                </ng-template>
-                <!---->
-
                 <!-- Choice question or True & false question -->
-                <div class="option_list"
+                <div  class="option_list"
                   *ngIf="questionsList[currentQuestionNo].type === 'CHOICE' || questionsList[currentQuestionNo].type === 'TRUE_FALSE'">
                   <ng-container
                     *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz; else responseValidate">
                     <div class="option"
-                      [ngClass]="{'selected': option.isSelected && !questionsList[this.currentQuestionNo].isValidate ,
-                                                  'correct' : option.isSelected && questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate,
-                                                  'incorrect' : option.isSelected && !questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate }"
-                      (click)="selectOption(option)" *ngFor="let option of questionsList[currentQuestionNo].options"
+                      [ngClass]="{
+                                  'selected': option.isSelected && !questionsList[this.currentQuestionNo].isValidate ,
+                                  'correct' : option.isSelected && questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate,
+                                  'incorrect' : option.isSelected && !questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate 
+                                }"
+                      (click)="selectOption(option)" 
+                      *ngFor="let option of questionsList[currentQuestionNo].options"
                       [@slideDownUp]>
                       <input type="checkbox" [checked]="option.isSelected" (click)="selectOption(option)"
                         *ngIf="questionsList[currentQuestionNo].isMultipleChoice">
@@ -143,7 +136,7 @@
                         <div class="input_container" *ngIf="block.isSelected">
                           <span class="input" role="textbox" contenteditable="false"
                             [attr.placeholder]="getDropHereTranslation()" (dragover)="onDragOver($event)"
-                            (click)="onClickEnd()" [draggable]="currentDroppedWord ? 'true' : 'false'"
+                            (click)="onDrop($event, block)" [draggable]="currentDroppedWord ? 'true' : 'false'"
                             (drop)="onDrop($event,block)">
                             <ng-container *ngIf="block.word">{{block.word}}</ng-container>
                           </span>
@@ -164,13 +157,23 @@
                 <!--Drag_Words-->
 
                 <ng-template #responseValidate>
-
                   <div class="gif">
                     <ng-container *ngIf="questionsList[this.currentQuestionNo].isCorrect">
-                      <img src="/assets/correct.jpg" alt="Animated GIF" height="130px">
+                      <img src="/assets/correct.png" alt="Animated GIF" height="120px">
                     </ng-container>
                     <ng-container *ngIf="!questionsList[this.currentQuestionNo].isCorrect">
-                      <img src="/assets/wrong.jpg" alt="Animated GIF" height="130px">
+                      <img src="/assets/wrong.png" alt="Animated GIF" height="120px">
+                    </ng-container>
+                  </div>
+
+                  <div class="feedback" 
+                       [ngClass]="{  'correct' : questionsList[this.currentQuestionNo].isCorrect,
+                                     'incorrect' : !questionsList[this.currentQuestionNo].isCorrect}">
+                    <ng-container *ngIf="questionsList[this.currentQuestionNo].isCorrect">
+                      {{ content.tipText.goodAnswer[this.currentLanguage] }}
+                    </ng-container>
+                    <ng-container *ngIf="!questionsList[this.currentQuestionNo].isCorrect">
+                      {{ content.tipText.wrongAnswer[this.currentLanguage] }}
                     </ng-container>
                   </div>
 
@@ -189,7 +192,6 @@
                             </span>
                           </ng-container>
                         </div>
-
                         <span class="text block" *ngIf="!isOptionSelected(questionsList[currentQuestionNo].options)">
                           {{ content.summary.noOptionChosen[this.currentLanguage] }}
                         </span>
@@ -212,6 +214,7 @@
                         </div>
                       </ng-container>
                     </div>
+
                     <!-- Correct answer -->
                     <span class="text label">{{ content.tipText.correctAnswer[this.currentLanguage] }}</span>
                     <div class="content correct"
@@ -222,6 +225,7 @@
                         </span>
                       </div>
                     </div>
+
                     <!-- Explanation -->
                     <span class="text label">{{ content.tipText.explanation[this.currentLanguage] }}</span>
                     <div class="content explanation">
@@ -232,6 +236,7 @@
                         {{questionsList[currentQuestionNo].incorrectAnswerTip}}
                       </span>
                     </div>
+                    
                   </div>
                 </ng-template>
 
@@ -255,7 +260,7 @@
                       </h2>
                       <p class="score-text">
                         {{ content.messages.quizScoreText[this.currentLanguage] }}
-                        {{ score }} out of 100.
+                        {{ score }} {{ content.messages.outOf[this.currentLanguage] }} 100.
                       </p>
                       <p class="score-text">
                         <ng-container *ngIf="isArchived; else Invite">
@@ -271,12 +276,12 @@
                         </button>
                         <ng-container *ngIf="isArchived; else isUnarchived">
                           <button class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>
-                            Get your certification now
+                            {{ content.buttons.getCertification[this.currentLanguage] }}
                           </button>
                         </ng-container>
                         <ng-template #isUnarchived>
-                          <button class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>
-                            {{ content.buttons.replayQuiz[this.currentLanguage] }}
+                          <button class="next_btn rounded" (click)="retakeExam()" [@fadeInOut]>
+                            {{ content.buttons.examRetake[this.currentLanguage] }}
                           </button>
                         </ng-template>
                       </footer>
@@ -376,10 +381,10 @@
           <footer [ngClass]="{ 'start-buttons': showWarning || isQuizEnded}" *ngIf="!(isQuizEnded && !isMiniQuiz)"
             [@slideDownUp]>
             <ng-container *ngIf="showWarning">
-              <button mat-raised-button class="exit_btn rounded" (click)="exit()">
+              <button class="exit_btn rounded" (click)="exit()">
                 {{ content.buttons.exitQuiz[this.currentLanguage] }}
               </button>
-              <button mat-raised-button class="next_btn rounded" (click)="startQuiz()">
+              <button class="next_btn rounded" (click)="startQuiz()" [disabled]="!isUserCanTakeExam">
                 {{ content.buttons.startQuiz[this.currentLanguage] }}
               </button>
             </ng-container>
@@ -410,7 +415,7 @@
                 <ng-container *ngIf="currentQuestionNo+1 !== questionsList.length">
                   <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].isValidate) 
                                 || !isMiniQuiz" class="next_btn rounded" [disabled]="!isAnswered()"
-                    (click)="nextQuestion()" [@fadeInOut]>
+                    (click)="nextQuestion()" (keydown.enter)="nextQuestion()" [@fadeInOut]>
                     {{ content.buttons.nextQuestion[this.currentLanguage] }}
                   </button>
                 </ng-container>

@@ -99,7 +99,7 @@ export class PlayComponent implements OnInit {
           if (this.isUserCanTakeExam) {
             this.totalQuestions = response.totalQuestions;
           } else {
-            this.router.navigateByUrl('/');
+            //this.router.navigateByUrl('/');
           }
         },
         (error) => {
@@ -259,13 +259,11 @@ export class PlayComponent implements OnInit {
     this.currentDraggedWord = dragWord;
   }
 
-  onClickEnd() { }
-
   onDragOver(event: DragEvent) {
     event.preventDefault();
   }
 
-  onDrop(event: DragEvent, block: Block) {
+  onDrop(event: Event, block: Block) {
     event.preventDefault();
     if (this.questionsList[this.currentQuestionNo].type !== QuestionType.FILL_BLANKS || !this.currentDraggedWord) return;
     const dropElement = event.target as HTMLElement;
@@ -427,6 +425,12 @@ export class PlayComponent implements OnInit {
     this.isQuizEnded = false;
     this.showWarning = false;
     this.isQuizStarted = true;
+  }
+
+  retakeExam() {
+    this.questionsList = []; 
+    this.currentQuestionNo = 0;
+    this.startQuiz();
   }
 
   finish() {
@@ -599,6 +603,7 @@ export class PlayComponent implements OnInit {
 
   previewQuestion() {
     if (this.currentQuestionNo > 0) {
+      this.questionsList[this.currentQuestionNo].isValidate = false;
       this.currentQuestionNo--;
       this.questionsList[this.currentQuestionNo].isValidate = false;
     }
@@ -627,6 +632,7 @@ export class PlayComponent implements OnInit {
     if (this.isMiniQuiz) return this.finish();
     const data = {
       campaignProgressId: this.campaignProgressId,
+      isMarkedCorrect: this.questionsList[this.currentQuestionNo].isCorrect,
       ...this.getInfoResponse()
     };
     this.apiService.validateQuestion(data).subscribe(

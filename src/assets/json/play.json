@@ -21,27 +21,21 @@
   "ruleList": {
     "en": [
       "1. There is no time limit for each question.",
-      "2. Once you select your answer, it can't be changed.",
-      "3. You can attempt questions without any limit on the number of attempts.",
-      "4. Your score will be the highest score obtained.",
-      "5. You cannot navigate back to previous questions during the exam.",
-      "6. You have the option to quit the exam whenever you wish."
+      "2. You can attempt questions without any limit on the number of attempts.",
+      "3. Your score will be the highest score obtained.",
+      "4. You have the option to quit the exam whenever you wish."
     ],
     "fr": [
       "1. Il n'y a pas de limite de temps pour chaque question.",
-      "2. Une fois que vous avez choisi votre réponse, elle ne peut pas être modifiée.",
-      "3. Vous pouvez tenter les questions sans limite du nombre d'essais.",
-      "4. Votre score sera le score le plus élevé obtenu.",
-      "5. Vous ne pouvez pas revenir aux questions précédentes pendant l'examen.",
-      "6. Vous avez la possibilité de quitter l'examen quand vous le souhaitez."
+      "2. Vous pouvez tenter les questions sans limite du nombre d'essais.",
+      "3. Votre score sera le score le plus élevé obtenu.",
+      "4. Vous avez la possibilité de quitter l'examen quand vous le souhaitez."
     ],
     "ar": [
       "1. لا يوجد وقت محدد لكل سؤال.",
-      "2. بمجرد اختيارك لإجابتك، لا يمكن تغييرها.",
-      "3. يمكنك محاولة الإجابة على الأسئلة دون قيود على عدد المحاولات.",
-      "4. سيتم احتساب أعلى درجة تم الحصول عليها كنقطة لك.",
-      "5. لا يمكنك العودة إلى الأسئلة السابقة أثناء الامتحان.",
-      "6. لديك خيار الخروج من الامتحان في أي وقت ترغب فيه."
+      "2. يمكنك محاولة الإجابة على الأسئلة دون قيود على عدد المحاولات.",
+      "3. سيتم احتساب أعلى درجة تم الحصول عليها كنقطة لك.",
+      "4. لديك خيار الخروج من الامتحان في أي وقت ترغب فيه."
     ]
   },
   "que_text": {
@@ -103,6 +97,11 @@
       "en": "Your score:",
       "fr": "Votre score :",
       "ar": "نقاطك:"
+    },
+    "outOf": {
+      "en": "out of",
+      "fr": "sur",
+      "ar": "من بين"
     },
     "quizFinishText": {
       "en": "You have successfully finished the quiz. Get your certification now!",
@@ -222,6 +221,16 @@
       "en": "Replay Quiz",
       "fr": "Rejouer au quiz",
       "ar": "إعادة الاختبار"
+    },
+    "examRetake": {
+      "en": "Exam retake",
+      "fr": "Repasser l'examen",
+      "ar": "إعادة الامتحان"
+    },
+     "getCertification": {
+      "en": "Get your certification now",
+      "fr": "Obtenez votre certification maintenant",
+      "ar": "احصل على شهادتك الآن"
     },
     "validate": {
       "en": "Validate",

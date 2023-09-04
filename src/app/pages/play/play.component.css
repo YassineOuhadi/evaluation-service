@@ -178,7 +178,7 @@
   .box header {
     padding: 20px 24px !important;
     height: 60px;
-    background: #3a3632 !important;
+    background: rgba(0, 0, 255, 0.496) !important;
     display: flex;
     justify-content: space-between;
     animation: slideToTop 0.5s forwards;
@@ -246,8 +246,6 @@
 
   .content_box {
     /*min-height: calc(100vh - 160px);*/
-
-
     padding: 20px 2%;
     padding: max(40px, 4%) max(20px, 4%);
     box-shadow: 0px 10px 15px 3px rgba(0, 0, 0, 0.1);
@@ -256,6 +254,16 @@
     max-height: max-content;
     position: relative;
     z-index: 0;
+  }
+
+  .content_box.correct {
+    background: #d4edda3d !important;
+    border: 0px !important;
+  }
+
+  .content_box.incorrect {
+    background: #f8d7da30 !important;
+    border: 0px !important;
   }
 
   .que_text {
@@ -275,6 +283,11 @@
     font-weight: 500;
     padding: 10px;
     border-radius: 6px;
+  }
+
+  .feedback.correct, .feedback.incorrect {
+    background: transparent;
+    border: 0px;
   }
 
   section .option_list {
@@ -398,7 +411,6 @@
     align-items: center;
     position: relative;
     /*width: 100% !important;*/
-
   }
 
   .content .input_container .input {
@@ -577,9 +589,8 @@
     font-size: 14px;
     line-height: 24px;
     display: flex;
+    color: #000;
   }
-
-  .text.label:first-child {}
 
   [mat-dialog-content] {
     margin: 0px;
@@ -610,7 +621,7 @@
     display: flex;
     justify-content: start;
     align-items: start;
-    padding: 40px;
+    padding: 20px;
     background-color: transparent;
   }
 
@@ -660,11 +671,9 @@
     font-size: 14px;
     box-shadow: none;
     text-transform: none;
-
     background-color: rgba(0, 0, 255, 0.496);
     color: #fff;
     border: 0px;
-
     font-family: "Montserrat", sans-serif;
     font-weight: 700;
     font-style: normal;
@@ -677,13 +686,11 @@
     background-color: rgba(0, 0, 255, 0.694);
   }
 
-
   button.next_btn:disabled,
   button.next_btn[disabled] {
     opacity: 0.8;
     cursor: default;
   }
-
 
   button.exit_btn {
     color: #000000c4;
@@ -873,13 +880,12 @@
 
   .questions-accordion .content .input_container {
     width: auto;
-
   }
 
   .questions-accordion .content {
     position: relative;
     padding: 0px;
-    padding-inline-start: 2px;
+    padding-inline-start: 4px;
     margin-bottom: 14px;
     border: 0px !important;
     display: flex;
