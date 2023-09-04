@@ -78,6 +78,38 @@ export class QuestionsComponent implements OnInit {
   totalItems = 0;
   questionCodeFilter: string = '';
   selection = new SelectionModel<QuestionObj>(true, []);
+
+  questionTypeLabelMapping = {
+    'True/False Question': {
+      value: QuestionType.TRUE_FALSE,
+      isMultipleChoice: false,
+      isDragWords: false
+    },
+    'Single Choice Question': {
+      value: QuestionType.CHOICE,
+      isMultipleChoice: false,
+      isDragWords: false
+    },
+    'Multiple Choice Question': {
+      value: QuestionType.CHOICE,
+      isMultipleChoice: true,
+      isDragWords: false
+    },
+    'Fill in the Blanks Question': {
+      value: QuestionType.FILL_BLANKS,
+      isMultipleChoice: false,
+      isDragWords: false
+    },
+    'Drag Words Question': {
+      value: QuestionType.FILL_BLANKS,
+      isMultipleChoice: false,
+      isDragWords: true
+    }
+  };
+
+  questionTypeLabels = Object.keys(this.questionTypeLabelMapping);
+
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -88,7 +120,7 @@ export class QuestionsComponent implements OnInit {
     private http: HttpClient,
     private apiService: AppService,
     private dialog: MatDialog) {
-    this.http.get("assets/questionsList.json").subscribe((res: any) => {
+    this.http.get("assets/json/table.json").subscribe((res: any) => {
       //debugger;
       this.content = res;
     });
@@ -183,35 +215,37 @@ export class QuestionsComponent implements OnInit {
         this.questionsList = response.content.map((item: any) => {
 
           if (item.type === QuestionType.TRUE_FALSE) {
-            item.question.options = [
+            item.options = [
               { id: 1, text: "True", isSelected: false },
               { id: 2, text: "False", isSelected: false },
             ];
           }
 
           if (item.type === QuestionType.FILL_BLANKS) {
-            item.question.textBlocks = this.parseTextIntoBlocks(item.question.text);
+            item.textBlocks = this.parseTextIntoBlocks(item.text);
           }
 
-          if ((item.type === QuestionType.FILL_BLANKS) && (item.question.isDragWords)) {
-            item.question.HiddenWord?.forEach((word: HiddenWord) => {
-              word.isDraggable = true;
-            })
+
+          if (item.hiddenWords && item.isDragWords) {
+            const hiddenWords = item.hiddenWords.map((word: string) => {
+              return {
+                word: word,
+                isDraggable: true,
+              };
+            });
+            item.hiddenWords = hiddenWords;
           }
 
-          if (item.question.options) {
-            item.question.options.forEach((option: Option) => {
+          if (item.options) {
+            item.options.forEach((option: Option) => {
               option.isSelected = false;
             });
           }
 
-          item.question.isCorrect = false;
+          item.isCorrect = false;
 
-          item.question.isWithTiming = item.question.isWithTiming;
-          if (item.question.isWithTiming) item.question.duration = item.question.duration;
-
-          item.question.isValidate = false;
-          item.question.courses = item.question.courses || []; // Ensure 'courses' property is initialized
+          item.isValidate = false;
+          item.courses = item.courses || []; // Ensure 'courses' property is initialized
 
           return item;
         });
@@ -253,10 +287,10 @@ export class QuestionsComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe(result => {
-      queObj.question.isCorrect = false;
-      queObj.question.isValidate = false;
-      if ((queObj.type === QuestionType.CHOICE || queObj.type === QuestionType.TRUE_FALSE) && queObj.question.options)
-        queObj.question.options.forEach((option) => (option.isSelected = false));
+      queObj.isCorrect = false;
+      queObj.isValidate = false;
+      if ((queObj.type === QuestionType.CHOICE || queObj.type === QuestionType.TRUE_FALSE) && queObj.options)
+        queObj.options.forEach((option) => (option.isSelected = false));
 
     });
   }
@@ -274,28 +308,9 @@ export class QuestionsComponent implements OnInit {
     event.stopPropagation();
     this.loadingBarService.start();
     this.isLoading = true
-    this.router.navigate(['/create'], { queryParams: { questionId: question.question.id, lang: this.currentLanguage } }).then(() => {
+    this.router.navigate(['/create'], { queryParams: { questionId: question.id, lang: this.currentLanguage } }).then(() => {
       this.loadingBarService.complete();
       this.isLoading = false;
-    });
-  }
-
-  deleteSingleQuestion(question: QuestionObj): Observable<void> {
-    return new Observable<void>((observer) => {
-      this.apiService.deleteQuestion(question.question.id).subscribe(
-        (response) => {
-          console.log(response.message);
-          this.questionsList = this.questionsList.filter(q => q !== question);
-          this.dataSource.data = this.questionsList;
-
-          observer.next();
-          observer.complete();
-        },
-        (error) => {
-          console.error('Error deleting question:', error);
-          observer.error(error);
-        }
-      );
     });
   }
 
@@ -317,14 +332,15 @@ export class QuestionsComponent implements OnInit {
           this.loadingBarService.start();
           this.isLoading = true;
 
-          const deleteObservables: Observable<void>[] = questions.map(question =>
-            this.deleteSingleQuestion(question)
-          );
+          const questionIdsToDelete = questions.map(question => question.id);
 
-          forkJoin(deleteObservables).subscribe(
+          this.apiService.deleteQuestions(questionIdsToDelete).subscribe(
             () => {
               this.loadingBarService.complete();
               this.isLoading = false;
+
+              this.questionsList = this.questionsList.filter(q => !questions.includes(q));
+              this.dataSource.data = this.questionsList;
             },
             (error) => {
               console.error('Error deleting questions:', error);
@@ -339,13 +355,14 @@ export class QuestionsComponent implements OnInit {
           courseIdArray.forEach(courseId => {
             const deleteData: { courseId: number, questionId: number } = {
               courseId: courseId,
-              questionId: questions[0].question.id
+              questionId: questions[0].id
             };
             this.loadingBarService.start();
             this.isLoading = true;
+
             this.apiService.deleteQuestionFromCourse(deleteData).subscribe(
               () => {
-                questions[0].question.courses = questions[0].question.courses.filter(course =>
+                questions[0].courses = questions[0].courses.filter(course =>
                   !result.deleteCourses.includes(course.id)
                 );
 
@@ -364,6 +381,7 @@ export class QuestionsComponent implements OnInit {
                 }, this.loadingDuration);
               }
             );
+
           });
         }
 
@@ -463,7 +481,7 @@ export class QuestionsComponent implements OnInit {
   }
 
   hasQuestionsWithCourses(): boolean {
-    return this.questionsList.some(question => question.question.courses.length > 0);
+    return this.questionsList.some(question => question.courses.length > 0);
   }
 
   deleteSelectedQuestions(event: Event) {
@@ -489,10 +507,10 @@ export class QuestionsComponent implements OnInit {
   }
 
   isQuestionWithCoursesSelected(): boolean {
-    return this.selection.selected.some(row => row.question.courses.length > 0);
+    return this.selection.selected.some(row => row.courses.length > 0);
   }
 
   isRowDisabled(row: QuestionObj) {
-    return !this.selection.isSelected(row) && (this.isQuestionWithCoursesSelected() || (this.selection.hasValue() && row.question.courses.length > 0));
+    return !this.selection.isSelected(row) && (this.isQuestionWithCoursesSelected() || (this.selection.hasValue() && row.courses.length > 0));
   }
 }

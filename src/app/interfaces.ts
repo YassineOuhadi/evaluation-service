@@ -13,10 +13,10 @@ export interface CreateQuestionData {
   type: QuestionType;
   code: string;
   text: string;
-  correctAnswerTipText: string;
-  incorrectAnswerTipText: string;
-  coursesIds: number[]; 
-  language_fk: number;
+  correctAnswerTip: string;
+  incorrectAnswerTip: string;
+  coursesIds: number[];
+  languageId: number;
   isMultipleChoice?: boolean;
   isCorrect?: boolean;
   isDragWords?: boolean;
@@ -25,8 +25,6 @@ export interface CreateQuestionData {
     text: string;
     isCorrect: boolean
   }[];
-  isWithTiming: boolean;
-  duration?: number;
 }
 
 export interface Text {
@@ -55,31 +53,27 @@ export interface Course {
 }
 
 export interface HiddenWord {
-  word : string;
-  isDraggable: boolean 
+  word: string;
+  isDraggable: boolean
 }
 
 export interface QuestionObj {
-  question: {
-    id: number;
-    code: string;
-    text: string;
-    correctAnswerTipText: string;
-    incorrectAnswerTipText: string;
-    courses: Course[];
-    options?: Option[];
-    isMultipleChoice?: boolean;
-    isDragWords?: boolean;
-    hiddenWords?: HiddenWord[];
-    textBlocks: Block[];
-    isCorrect: boolean;
-    isValidate?: boolean;
-    isWithTiming: boolean;
-    duration: number;
-    language: Language[];
-  };
+  id: number;
+  code: string;
+  text: string;
+  correctAnswerTip: string;
+  incorrectAnswerTip: string;
+  courses: Course[];
+  options?: Option[];
+  isMultipleChoice?: boolean;
+  isDragWords?: boolean;
+  hiddenWords?: HiddenWord[];
+  textBlocks: Block[];
+  isCorrect: boolean;
+  isValidate?: boolean;
+  language: Language[];
   type: QuestionType;
-  responses?: string[]; //!
+  responses?: string[];
 }
 
 export interface Language {

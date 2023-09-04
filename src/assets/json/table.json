@@ -1,15 +1,15 @@
 {
     "header": {
-      "title": {
-        "en": "Questions List",
-        "fr": "Liste des questions",
-        "ar": "قائمة الأسئلة"
-      },
-      "button": {
-        "en": "Create new Question",
-        "fr": "Créer une nouvelle question",
-        "ar": "إنشاء سؤال جديد"
-      }
+        "title": {
+            "en": "Questions List",
+            "fr": "Liste des questions",
+            "ar": "قائمة الأسئلة"
+        },
+        "button": {
+            "en": "Create new Question",
+            "fr": "Créer une nouvelle question",
+            "ar": "إنشاء سؤال جديد"
+        }
     },
     "filter": {
         "choiceType": {
@@ -120,40 +120,39 @@
             "ar": "هل أنت متأكد أنك تريد حذف السؤال من الدورات المحددة؟"
         },
         "cancel": {
-      "en": "Cancel",
-      "fr": "Annuler",
-      "ar": "إلغاء"
-    },
-    "close": {
-      "en": "Close",
-      "fr": "Fermer",
-      "ar": "إغلاق"
-    },
-    "confirm": {
-      "en": "Confirm Delete",
-      "fr": "Confirmer la suppression",
-      "ar": "تأكيد الحذف"
-    },
-
-    "deleteQuestionPermanently": {
-      "en": "Do you want to delete the question permanently?",
-      "fr": "Voulez-vous supprimer définitivement la question ?",
-      "ar": "هل تريد حذف السؤال بشكل دائم؟"
-    },
-    "deleteMultiQuestions": {
-      "en": "Do you want to delete the questions permanently?",
-      "fr": "Voulez-vous supprimer définitivement les questions ?",
-      "ar": "هل تريد حذف السؤال بشكل دائم؟"
-    },
-    "deleteQuestionLabel": {
-      "en": "Delete Question",
-      "fr": "Supprimer la question",
-      "ar": "حذف السؤال"
-    },
-    "deleteQuestionsLabel": {
-      "en": "Delete Questions",
-      "fr": "Supprimer la questions",
-      "ar": "حذف السؤال"
+            "en": "Cancel",
+            "fr": "Annuler",
+            "ar": "إلغاء"
+        },
+        "close": {
+            "en": "Close",
+            "fr": "Fermer",
+            "ar": "إغلاق"
+        },
+        "confirm": {
+            "en": "Confirm Delete",
+            "fr": "Confirmer la suppression",
+            "ar": "تأكيد الحذف"
+        },
+        "deleteQuestionPermanently": {
+            "en": "Do you want to delete the question permanently?",
+            "fr": "Voulez-vous supprimer définitivement la question ?",
+            "ar": "هل تريد حذف السؤال بشكل دائم؟"
+        },
+        "deleteMultiQuestions": {
+            "en": "Do you want to delete the questions permanently?",
+            "fr": "Voulez-vous supprimer définitivement les questions ?",
+            "ar": "هل تريد حذف السؤال بشكل دائم؟"
+        },
+        "deleteQuestionLabel": {
+            "en": "Delete Question",
+            "fr": "Supprimer la question",
+            "ar": "حذف السؤال"
+        },
+        "deleteQuestionsLabel": {
+            "en": "Delete Questions",
+            "fr": "Supprimer la questions",
+            "ar": "حذف السؤال"
+        }
     }
-    }
-}  
+}

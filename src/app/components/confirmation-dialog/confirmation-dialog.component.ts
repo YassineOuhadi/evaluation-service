@@ -5,16 +5,17 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { AppService } from '../../app.service';
 import { Observable } from 'rxjs';
 import { Subscription, interval } from 'rxjs';
-import { QuestionType, 
-         Option, 
-         Block, 
-         Course,
-         HiddenWord, 
-         QuestionObj, 
-         SelectedBlockInfo, 
-         Language, 
-         Exam
-       } from '../../interfaces';
+import {
+  QuestionType,
+  Option,
+  Block,
+  Course,
+  HiddenWord,
+  QuestionObj,
+  SelectedBlockInfo,
+  Language,
+  Exam
+} from '../../interfaces';
 
 @Component({
   selector: 'app-confirmation-dialog',
@@ -38,19 +39,19 @@ import { QuestionType,
   ]
 })
 
-export class ConfirmationDialogComponent implements OnInit{
+export class ConfirmationDialogComponent implements OnInit {
 
   currentLanguage = 'en';
   content: any;
 
   deleteInAllCourses = true;
   selectedCourses: number[] = [];
-  confirmedDeleteCourses = false; 
+  confirmedDeleteCourses = false;
 
-  constructor(private http: HttpClient, 
-    @Inject(MAT_DIALOG_DATA) public data: { questions: QuestionObj[]; currentLanguage: string } ,
-    public dialogRef: MatDialogRef<ConfirmationDialogComponent> ) {
-    this.http.get("assets/questionsList.json").subscribe((res: any) => {
+  constructor(private http: HttpClient,
+    @Inject(MAT_DIALOG_DATA) public data: { questions: QuestionObj[]; currentLanguage: string },
+    public dialogRef: MatDialogRef<ConfirmationDialogComponent>) {
+    this.http.get("assets/json/table.json").subscribe((res: any) => {
       this.content = res;
     });
   }
@@ -59,26 +60,26 @@ export class ConfirmationDialogComponent implements OnInit{
     this.currentLanguage = this.data.currentLanguage;
     console.log("dialog data", this.data);
 
-    if(this.data.questions.length === 1) {
+    if (this.data.questions.length === 1) {
       this.initializeSelectedCourses();
-      if(this.data.questions[0]["question"].courses.length === 0) this.confirmedDeleteCourses = true;
+      if (this.data.questions[0].courses.length === 0) this.confirmedDeleteCourses = true;
     }
   }
 
   getLayoutDirection(): string {
     return this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
   }
-  
+
   rightToLeft(): boolean {
     return this.currentLanguage !== 'ar';
   }
 
   changeLanguage(language: string) {
     this.currentLanguage = language;
-  } 
+  }
 
   initializeSelectedCourses(): void {
-    this.selectedCourses = this.data.questions[0]["question"].courses.map(course => course.id);
+    this.selectedCourses = this.data.questions[0].courses.map(course => course.id);
   }
 
   toggleCourse(courseId: number): void {

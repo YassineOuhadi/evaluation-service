@@ -13,11 +13,11 @@ const routes: Routes = [
   },
   {
     path: 'questions',
-    component:QuestionsComponent
+    component: QuestionsComponent
   },
   {
     path: 'create',
-    component:CreateComponent
+    component: CreateComponent
   },
   {
     path: 'play',

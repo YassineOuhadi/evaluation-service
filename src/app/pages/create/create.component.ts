@@ -72,6 +72,7 @@ export class CreateComponent implements OnInit {
   languageControl = new FormControl();
 
   currentStepIndex = 0; // Initialize with the index of the first step
+  questionIndex = false;
 
   // Function to handle step changes
   onStepChanged(index: number) {
@@ -88,7 +89,7 @@ export class CreateComponent implements OnInit {
     private route: ActivatedRoute
   ) {
 
-    this.http.get("assets/modalConstants.json").subscribe((res: any) => {
+    this.http.get("assets/json/create.json").subscribe((res: any) => {
       //debugger;
       this.content = res;
     })
@@ -114,48 +115,44 @@ export class CreateComponent implements OnInit {
         type: QuestionType.CHOICE,
         code: '',
         text: '',
-        correctAnswerTipText: '',
-        incorrectAnswerTipText: '',
+        correctAnswerTip: '',
+        incorrectAnswerTip: '',
         isMultipleChoice: false,
         options: [
           { id: 1, text: '', isCorrect: false }
         ],
         coursesIds: [],
-        language_fk: 1,
-        isWithTiming: false
+        languageId: 1,
       },
       {
         type: QuestionType.TRUE_FALSE,
         code: '',
         text: '',
-        correctAnswerTipText: '',
-        incorrectAnswerTipText: '',
+        correctAnswerTip: '',
+        incorrectAnswerTip: '',
         isCorrect: false,
         coursesIds: [],
-        language_fk: 1,
-        isWithTiming: false
+        languageId: 1,
       },
       {
         type: QuestionType.FILL_BLANKS,
         code: '',
         text: '',
-        correctAnswerTipText: '',
-        incorrectAnswerTipText: '',
+        correctAnswerTip: '',
+        incorrectAnswerTip: '',
         isDragWords: false,
         coursesIds: [],
-        language_fk: 1,
-        isWithTiming: false
+        languageId: 1,
       },
       {
         type: QuestionType.MATCHING,
         code: '',
         text: '',
-        correctAnswerTipText: '',
-        incorrectAnswerTipText: '',
+        correctAnswerTip: '',
+        incorrectAnswerTip: '',
         isDragWords: true,
         coursesIds: [],
-        language_fk: 1,
-        isWithTiming: false
+        languageId: 1,
       }
     ];
 
@@ -164,7 +161,7 @@ export class CreateComponent implements OnInit {
         this.languages = languages;
         this.filteredLanguages = this.languageControl.valueChanges.pipe(
           startWith(''),
-          map((value) => this._filterLanguages(value?.toString().toLowerCase() ?? '')) // Ensure value is a string
+          map((value) => this._filterLanguages(value?.toString().toLowerCase() ?? ''))
         );
       },
       (error) => {
@@ -183,6 +180,33 @@ export class CreateComponent implements OnInit {
 
   }
 
+  initializeFields(question: CreateQuestionData) {
+    if (this.isEditQuestion) {
+      question.id ? this.handleEditQuestion(question.id) : null;
+    } else {
+      question.code = '';
+      question.text = '';
+      question.correctAnswerTip = '';
+      question.incorrectAnswerTip = '';
+      switch (this.activeQuestionType) {
+        case QuestionType.CHOICE:
+          question.options = [
+            { id: 1, text: '', isCorrect: false }
+          ];
+          question.isMultipleChoice = false;
+          break;
+        case QuestionType.TRUE_FALSE:
+          question.isCorrect = false;
+          break;
+        case QuestionType.FILL_BLANKS:
+          question.isDragWords = false;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   private handleEditQuestion(questionId: number) {
     this.isEditQuestion = true;
 
@@ -197,7 +221,8 @@ export class CreateComponent implements OnInit {
 
     this.apiService.findQuestion(questionId).subscribe(
       (response: any) => {
-        const questionData = response.question;
+        console.log("Edit question", response);
+        const questionData = response;
         let questionType = response.type as QuestionType;
         var mappedQuestion: CreateQuestionData;
 
@@ -206,23 +231,21 @@ export class CreateComponent implements OnInit {
           type: questionType,
           code: questionData.code,
           text: questionData.text,
-          correctAnswerTipText: questionData.correctAnswerTipText,
-          incorrectAnswerTipText: questionData.incorrectAnswerTipText,
+          correctAnswerTip: questionData.correctAnswerTip,
+          incorrectAnswerTip: questionData.incorrectAnswerTip,
           coursesIds: questionData.courses.map((course: Course) => course.id),
-          language_fk: questionData.language.id,
-          isWithTiming: questionData.withTiming,
-          duration: questionData.duration
+          languageId: questionData.language.id,
         };
 
         if (questionType === QuestionType.CHOICE) {
-          mappedQuestion.isMultipleChoice = questionData.multipleChoice;
+          mappedQuestion.isMultipleChoice = questionData.isMultipleChoice;
 
           mappedQuestion.options = questionData.options.map((option: any) => {
             const optionText = option.text.replace(/^\d+\-\s*/, '');
             return {
               id: option.id,
               text: optionText,
-              isCorrect: option.correct
+              isCorrect: option.isCorrect
             };
           });
 
@@ -376,16 +399,28 @@ export class CreateComponent implements OnInit {
     });
   }
 
+
   toggleQuestion(questionType: QuestionType): void {
     if (this.isEditQuestion) return;
-    if (this.activeQuestionType === questionType) {
-      this.isQteOpen = false;
-      this.activeQuestionType = null;
-    } else {
-      this.isQteOpen = true; this.activeQuestionType = questionType;
+    if (this.activeQuestionType === null || this.activeQuestionType !== questionType) {
+      // toastr id activeQuestionType not null && !isQuestionEtatInitial
+      let activeQuestion = this.questions.find((q) => q.type === this.activeQuestionType);
+      activeQuestion ? this.initializeFields(activeQuestion) : null;
     }
-    if (this.activeQuestionType === QuestionType.FILL_BLANKS) this.questionTextContents[this.activeQuestionType] = '';
+    if (this.activeQuestionType === questionType) {
+      if (this.questionIndex) this.isQteOpen = false;
+      else this.isQteOpen = true
+    }
+    else {
+      this.isQteOpen = true;
+      this.activeQuestionType = questionType;
+      if (this.activeQuestionType === QuestionType.FILL_BLANKS) {
+        this.questionTextContents[this.activeQuestionType] = '';
+      }
+    }
+    this.questionIndex = !this.questionIndex;
   }
+
 
   toggleMedia(questionType: QuestionType): void {
     this.sectionStates[`media_${questionType}`] = !this.sectionStates[`media_${questionType}`];
@@ -641,12 +676,8 @@ export class CreateComponent implements OnInit {
       }
     }
 
-    if ((!questionData.correctAnswerTipText.trim()) || (!questionData.incorrectAnswerTipText.trim())) {
+    if ((!questionData.correctAnswerTip.trim()) || (!questionData.incorrectAnswerTip.trim())) {
       return false;
-    }
-
-    if (questionData.isWithTiming) {
-      if (!questionData.duration) return false;
     }
 
     return true;
@@ -661,16 +692,19 @@ export class CreateComponent implements OnInit {
     const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
     if (!questionData) return;
 
+
+    let i = 0;
     if (questionData.type === QuestionType.CHOICE && questionData.options) {
       for (const option of questionData.options) {
-        if (!option.text.includes(`${option.id}-`)) {
-          option.text = `${option.id}- ${option.text}`;
+        i++;
+        if (!option.text.includes(`${i}-`)) {
+          option.text = `${i}- ${option.text}`;
         }
       }
     }
 
     questionData.coursesIds = this.selectedCourses;
-    if (!this.isEditQuestion) questionData.language_fk = this.languageControl.value.id;
+    if (!this.isEditQuestion) questionData.languageId = this.languageControl.value.id;
 
     this.loadingBarService.start();
     this.isSaving = true;
@@ -708,7 +742,7 @@ export class CreateComponent implements OnInit {
       (e) => {
 
         const loadingTimer = setTimeout(() => {
-          console.error('Error while sending data:', e.error.message);
+          console.error('Error while sending data:', e.error);
 
           this.showToast('failedToCreateQuestion', this.currentLanguage);
 
@@ -721,6 +755,7 @@ export class CreateComponent implements OnInit {
   }
 
   editQuestion(questionData: any): void {
+    console.log("Edit question", questionData);
     this.apiService.editQuestion(questionData).subscribe(
       (response) => {
         const loadingTimer = setTimeout(() => {
@@ -760,6 +795,19 @@ export class CreateComponent implements OnInit {
     return;
   }
 
+  isQuestionEtatInitial(question: CreateQuestionData): boolean {
+    if (question.text.trim() !== '' || question.code.trim() !== '' || question.correctAnswerTip.trim() !== '' || question.incorrectAnswerTip.trim() !== '') {
+      return false;
+    };
+    if (question.type === QuestionType.CHOICE && question.options) {
+      if (question.options.length !== 1) return false;
+      else if (question.options[0].text.trim() !== '' || question.options[0].isCorrect) return false;
+    }
+    else if (question.type === QuestionType.FILL_BLANKS && question.isDragWords) return false;
+    else if (question.type === QuestionType.TRUE_FALSE && question.isCorrect) return false;
+    return true;
+  }
+
   areDataInvalid(): void {
     const questionData = this.questions.find((q) => q.type === this.activeQuestionType);
     if (!this.activeQuestionType || !questionData) return;
@@ -767,8 +815,8 @@ export class CreateComponent implements OnInit {
 
     questionData.code = questionData.code.trim();
     questionData.text = questionData.text.trim();
-    questionData.correctAnswerTipText = questionData.correctAnswerTipText.trim();
-    questionData.incorrectAnswerTipText = questionData.incorrectAnswerTipText.trim();
+    questionData.correctAnswerTip = questionData.correctAnswerTip.trim();
+    questionData.incorrectAnswerTip = questionData.incorrectAnswerTip.trim();
 
 
     if (questionData.code === '') return;
@@ -779,16 +827,9 @@ export class CreateComponent implements OnInit {
     else if (this.activeQuestionType === QuestionType.CHOICE && !this.areOpenOptionsInvalid()) return;
     else if (this.activeQuestionType === QuestionType.FILL_BLANKS && !this.areTextBlockInvalid()) return;
 
-    else if (questionData.correctAnswerTipText === '' || questionData.incorrectAnswerTipText === '') {
+    else if (questionData.correctAnswerTip === '' || questionData.incorrectAnswerTip === '') {
       if (!this.isTipsOpen(this.activeQuestionType)) this.toggleTips(this.activeQuestionType);
       return;
-    }
-
-    if (questionData.isWithTiming) {
-      if (!questionData.duration) {
-        if (!this.isSettingsOpen(this.activeQuestionType)) this.toggleSettings(this.activeQuestionType);
-        return;
-      }
     }
 
     return;
@@ -869,11 +910,11 @@ export class CreateComponent implements OnInit {
   }
 
   isCorrectTipTextValid(question: any): boolean {
-    return question.correctAnswerTipText && question.correctAnswerTipText.trim() !== '';
+    return question.correctAnswerTip && question.correctAnswerTip.trim() !== '';
   }
 
   isIncorrectTipTextValid(question: any): boolean {
-    return question.incorrectAnswerTipText && question.incorrectAnswerTipText.trim() !== '';
+    return question.incorrectAnswerTip && question.incorrectAnswerTip.trim() !== '';
   }
   /* Save Question */
 

@@ -5,57 +5,31 @@
         <mat-card-content>
 
           <header [@slideDownUp]>
-            <div class="title" (click)="onClickTitle()">{{ content.header.title[this.currentLanguage] }}</div>
-            <ng-container *ngIf="!isMiniQuiz && !showWarning && questionsList.length>0">
-              <div class="timer"
-                *ngIf="questionsList[this.currentQuestionNo].question.isWithTiming && remainingTime !== 0" [@fadeInOut]>
-                <div class="time_left_txt">{{ content.timer.timeOff[this.currentLanguage] }}</div>
-                <div class="timer_sec">{{remainingTime}}</div>
-              </div>
-            </ng-container>
-
+            <div class="title">{{ content.header.title[this.currentLanguage] }}</div>
           </header>
 
           <section [ngClass]="{ 'grid p-0': isQuizEnded , 'full' : isQuizEnded && !isMiniQuiz}">
 
-            <!--<ng-container *ngIf="showWarning">
-              <div class="content_box rules rounded">
-              <div class="info-title"><span>{{ content.quizRules[this.currentLanguage] }}</span></div>
-              <div class="info-list">
-                  <div class="info" *ngFor="let rule of content.ruleList[this.currentLanguage]">{{ rule }}</div>
-                  <div class="info">1. You will have only <span>15 seconds</span> per each question.</div>
-                  <div class="info">2. Once you select your answer, it can't be undone.</div>
-                  <div class="info">3. You can't select any option once time goes off.</div>
-                  <div class="info">4. You can't exit from the Quiz Once Started.</div>
-              </div>
-              </div>
-            </ng-container>-->
-
             <ng-container *ngIf="showWarning">
-              <div class="scrolling-form-container__pane-left" style="min-height: calc(100vh - 160px);">
+              <div class="scrolling-form-container__pane-left">
                 <div class="left-pane d-flex flex-column align-items-start justify-content-between">
                   <div class="left-pane__logo-wrapper" role="banner">
-                    <h3 class="left-pane__company-name">AWARINO</h3>
+                    <img class="left-pane__company-name" src="/assets/logo.png">
                   </div>
-                  <div class="left-pane__top">
+                  <div class="left-pane__top mt-2">
                     <h1 class="left-pane__test-name" aria-label="Welcome to Sample Test">
-                      <span class="d-flex" aria-hidden="true">{{ content.messages.welcome[this.currentLanguage]
-                        }}</span>
+                      <span class="d-flex" aria-hidden="true">
+                        {{ content.messages.welcome[this.currentLanguage] }}
+                      </span>
                       <span aria-hidden="true">{{ content.header.title[this.currentLanguage] }}</span>
                     </h1>
-                    <div class="info-title"><span>{{ content.quizRules[this.currentLanguage] }}</span></div>
+                    <div class="info-title">
+                      <span>{{ content.quizRules[this.currentLanguage] }}</span>
+                    </div>
                     <div class="info-list">
                       <div class="info" *ngFor="let rule of content.ruleList[this.currentLanguage]">{{ rule }}</div>
                     </div>
                     <div class="d-flex left-pane__test-detail-container">
-                      <div class="left-pane__test-detail">
-                        <span class="left-pane__test-detail__header" data-automation="test-duration-text">{{
-                          content.messages.testDuration[this.currentLanguage] }}</span>
-                        <span class="left-pane__test-detail__content"
-                          data-automation="test-duration">{{getTotalTestDurationInMinutes()}} {{
-                          content.messages.durationMinutes[this.currentLanguage] }}</span>
-                      </div>
-                      <!-- nb question from campagn -->
                       <div class="left-pane__test-detail">
                         <span class="left-pane__test-detail__header">{{
                           content.messages.numberOfQuestions[this.currentLanguage] }}</span>
@@ -69,236 +43,161 @@
             </ng-container>
 
             <ng-container *ngIf="isQuizStarted">
+
               <div class="content_box" *ngIf="questionsList.length>0">
 
-                <div class="que_text">
-                  <span>
-                    {{nbQuestionsAttempted? nbQuestionsAttempted+currentQuestionNo+1 : currentQuestionNo+1}}.
+                <!---->
+                <ng-container
+                  *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz; else responseValidateFeedback;">
+                  <span class="que_text">
+                    {{currentQuestionNo+1}}.
                     <ng-container
                       *ngIf="questionsList[currentQuestionNo].type === 'FILL_BLANKS'; else showQuestionText">
-                      <ng-container *ngIf="questionsList[currentQuestionNo].question.isDragWords">
+                      <ng-container *ngIf="questionsList[currentQuestionNo].isDragWords">
                         {{ content.que_text.dragWords[this.currentLanguage] }}
                       </ng-container>
-                      <ng-container *ngIf="!questionsList[currentQuestionNo].question.isDragWords">
+                      <ng-container *ngIf="!questionsList[currentQuestionNo].isDragWords">
                         {{ content.que_text.fillBlanks[this.currentLanguage] }}
                       </ng-container>
                     </ng-container>
                     <ng-template #showQuestionText>
-                      {{questionsList[currentQuestionNo].question.text}}
+                      {{questionsList[currentQuestionNo].text}}
                     </ng-template>
                   </span>
-                </div>
+                </ng-container>
 
+                <ng-template #responseValidateFeedback>
+                  <div class="feedback" [ngClass]="{  'correct' : questionsList[this.currentQuestionNo].isCorrect,
+                                      'incorrect' : !questionsList[this.currentQuestionNo].isCorrect}">
+                    <ng-container *ngIf="questionsList[this.currentQuestionNo].isCorrect">
+                      {{ content.tipText.goodAnswer[this.currentLanguage] }}
+                    </ng-container>
+                    <ng-container *ngIf="!questionsList[this.currentQuestionNo].isCorrect">
+                      {{ content.tipText.wrongAnswer[this.currentLanguage] }}
+                    </ng-container>
+                  </div>
+                </ng-template>
+                <!---->
+
+                <!-- Choice question or True & false question -->
                 <div class="option_list"
                   *ngIf="questionsList[currentQuestionNo].type === 'CHOICE' || questionsList[currentQuestionNo].type === 'TRUE_FALSE'">
-                  <div class="option" [ngClass]="{'selected': option.isSelected }" (click)="selectOption(option)"
-                    *ngFor="let option of questionsList[currentQuestionNo].question.options" [@slideDownUp]>
-                    <input type="checkbox" [checked]="option.isSelected" (click)="selectOption(option)"
-                      *ngIf="questionsList[currentQuestionNo].question.isMultipleChoice">
-                    <input type="radio" [checked]="option.isSelected" (click)="selectOption(option)"
-                      *ngIf="!questionsList[currentQuestionNo].question.isMultipleChoice || questionsList[currentQuestionNo].type === 'TRUE_FALSE'">
-                    <span class="mx-4">{{option.text}}</span>
-                  </div>
-                  <div class="content"
-                    [ngClass]="{ 'correct': questionsList[currentQuestionNo].question.isCorrect, 'incorrect': !questionsList[currentQuestionNo].question.isCorrect}"
-                    *ngIf="isMiniQuiz && questionsList[this.currentQuestionNo].question.isValidate"
-                    style="justify-content: flex-start;display: flex;">
-                    <mat-icon class="icon"
-                      *ngIf="questionsList[currentQuestionNo].question.isCorrect">check_circle</mat-icon>
-                    <mat-icon class="icon" *ngIf="!questionsList[currentQuestionNo].question.isCorrect">error</mat-icon>
-                    <span *ngIf="questionsList[currentQuestionNo].question.isCorrect" class="text mx-2">{{
-                      content.tipText.correctAnswer[this.currentLanguage] }}
-                      {{questionsList[currentQuestionNo].question.correctAnswerTipText}}</span>
-                    <span *ngIf="!questionsList[currentQuestionNo].question.isCorrect" class="text mx-2">{{
-                      content.tipText.incorrectAnswer[this.currentLanguage] }}
-                      {{questionsList[currentQuestionNo].question.incorrectAnswerTipText}}</span>
-                  </div>
+                  <ng-container
+                    *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz; else responseValidate">
+                    <div class="option"
+                      [ngClass]="{'selected': option.isSelected && !questionsList[this.currentQuestionNo].isValidate ,
+                                                  'correct' : option.isSelected && questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate,
+                                                  'incorrect' : option.isSelected && !questionsList[this.currentQuestionNo].isCorrect && questionsList[this.currentQuestionNo].isValidate }"
+                      (click)="selectOption(option)" *ngFor="let option of questionsList[currentQuestionNo].options"
+                      [@slideDownUp]>
+                      <input type="checkbox" [checked]="option.isSelected" (click)="selectOption(option)"
+                        *ngIf="questionsList[currentQuestionNo].isMultipleChoice">
+                      <input type="radio" [checked]="option.isSelected" (click)="selectOption(option)"
+                        *ngIf="!questionsList[currentQuestionNo].isMultipleChoice || questionsList[currentQuestionNo].type === 'TRUE_FALSE'">
+                      <span class="mx-4">{{option.text}}</span>
+                    </div>
+                  </ng-container>
                 </div>
 
+                <!-- Fill in the blanks question -->
                 <div class="fill_container"
-                  *ngIf="questionsList[currentQuestionNo].type === 'FILL_BLANKS' && !questionsList[currentQuestionNo].question.isDragWords">
-                  <div class="content" *ngIf="this.questionsList[this.currentQuestionNo].question.textBlocks"
-                    [@fadeInOut]>
-                    <ng-container *ngFor="let block of this.questionsList[this.currentQuestionNo].question.textBlocks;">
-                      <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
-                      <div class="input_container" *ngIf="block.isSelected">
-                        <input class="input" [(ngModel)]="block.word" (input)="onTextareaInput()"
-                          [ngStyle]="{ width: calculateInputWidth(block) }" />
-                      </div>
-                      <span *ngIf="block.specialCharacter">
-                        {{ block.specialCharacter}}
-                      </span>
-                      {{' '}}
-                    </ng-container>
-                  </div>
-                  <div class="content"
-                    [ngClass]="{ 'correct': questionsList[currentQuestionNo].question.isCorrect, 'incorrect': !questionsList[currentQuestionNo].question.isCorrect}"
-                    *ngIf="isMiniQuiz && questionsList[this.currentQuestionNo].question.isValidate"
-                    style="justify-content: flex-start;display: flex;">
-                    <mat-icon class="icon"
-                      *ngIf="questionsList[currentQuestionNo].question.isCorrect">check_circle</mat-icon>
-                    <mat-icon class="icon" *ngIf="!questionsList[currentQuestionNo].question.isCorrect">error</mat-icon>
-                    <span *ngIf="questionsList[currentQuestionNo].question.isCorrect" class="text mx-2">{{
-                      content.tipText.correctAnswer[this.currentLanguage] }}
-                      {{questionsList[currentQuestionNo].question.correctAnswerTipText}}</span>
-                    <span *ngIf="!questionsList[currentQuestionNo].question.isCorrect" class="text mx-2">{{
-                      content.tipText.incorrectAnswer[this.currentLanguage] }}
-                      {{questionsList[currentQuestionNo].question.incorrectAnswerTipText}}</span>
-                  </div>
-                </div>
-
-                <!--Drag_Words-->
-                <div class="fill_container"
-                  *ngIf="questionsList[currentQuestionNo].type === 'FILL_BLANKS' && questionsList[currentQuestionNo].question.isDragWords">
-                  <div class="content" *ngIf="hasDraggableHiddenWords()" [@slideDownUp]>
-                    <div class="draggable-words">
-                      <div *ngFor="let dragWord of questionsList[currentQuestionNo].question.hiddenWords">
-                        <span (dragstart)="onDragStart($event, dragWord)" (click)="onClickStart(dragWord)">
-                          <div class="draggable-word" *ngIf="dragWord.isDraggable" draggable="true">
-                            {{ dragWord.word }}
-                          </div>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="content block" *ngIf="this.questionsList[this.currentQuestionNo].question.textBlocks"
-                    [@fadeInOut]>
-                    <ng-container *ngFor="let block of this.questionsList[this.currentQuestionNo].question.textBlocks;">
-                      <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
-                      <div class="input_container" *ngIf="block.isSelected">
-                        <span class="input" role="textbox" contenteditable="false"
-                          [attr.placeholder]="getDropHereTranslation()" (dragover)="onDragOver($event)"
-                          (click)="onClickEnd()" [draggable]="currentDroppedWord ? 'true' : 'false'"
-                          (drop)="onDrop($event,block)">
-                          <ng-container *ngIf="block.word">{{block.word}}</ng-container>
-                        </span>
-                      </div>
-                      <span *ngIf="block.specialCharacter">
-                        {{ block.specialCharacter}}
-                      </span>
-                      {{' '}}
-                    </ng-container>
-                    <div class="refresh-icon" [ngClass]="rightToLeft() ? 'right' : 'left'"
-                      (click)="refreshDragDropContent()" *ngIf="!hasDraggableHiddenWords()" [@fadeInOut]>
-                      <mat-icon>refresh</mat-icon>
-                    </div>
-                  </div>
-                  <div class="content"
-                    [ngClass]="{ 'correct': questionsList[currentQuestionNo].question.isCorrect, 'incorrect': !questionsList[currentQuestionNo].question.isCorrect}"
-                    *ngIf="isMiniQuiz && questionsList[this.currentQuestionNo].question.isValidate"
-                    style="justify-content: flex-start;display: flex;">
-                    <mat-icon class="icon"
-                      *ngIf="questionsList[currentQuestionNo].question.isCorrect">check_circle</mat-icon>
-                    <mat-icon class="icon" *ngIf="!questionsList[currentQuestionNo].question.isCorrect">error</mat-icon>
-                    <span *ngIf="questionsList[currentQuestionNo].question.isCorrect" class="text mx-2">{{
-                      content.tipText.correctAnswer[this.currentLanguage] }}
-                      {{questionsList[currentQuestionNo].question.correctAnswerTipText}}</span>
-                    <span *ngIf="!questionsList[currentQuestionNo].question.isCorrect" class="text mx-2">{{
-                      content.tipText.incorrectAnswer[this.currentLanguage] }}
-                      {{questionsList[currentQuestionNo].question.incorrectAnswerTipText}}</span>
-                  </div>
-                </div>
-                <!--Drag_Words-->
-
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="isMiniQuiz && isQuizEnded">
-              <div class="congratulations-container">
-                <div class="congratulations-content">
-                  <img src="/assets/badge.png" class="certification-image" alt="Certification Image" />
-                  <div class="text-container px-4">
-                    <h2 class="congratulations-title">{{
-                      content.messages.miniQuizcompletionMessage[this.currentLanguage] }}</h2>
-                    <p class="score-text">{{ content.messages.quizScoreText[this.currentLanguage] }} {{
-                      correctAnswerCount }} out of {{ questionsList.length }}</p>
-                    <p class="score-text">{{ content.messages.quizFinishText[this.currentLanguage] }}</p>
-                    <!-- Add any additional content or call-to-action buttons here -->
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="!isMiniQuiz && isQuizEnded">
-              <div class="main-container">
-                <div class="congratulations-container">
-                  <div class="congratulations-content">
-                    <img src="/assets/badge.png" class="certification-image" alt="Certification Image" />
-                    <div class="text-container px-4">
-                      <h2 class="congratulations-title">{{
-                        content.messages.quizCongratulationsTitle[this.currentLanguage] }}</h2>
-                      <p class="score-text">
-                        {{ content.messages.quizScoreText[this.currentLanguage] }}
-                        {{ score }} out of 100.
-                      </p>
-                      <p class="score-text">
-                        {{ content.messages.quizFinishText[this.currentLanguage] }}
-                        {{ content.messages.courseFinishText[this.currentLanguage] }}
-                      </p>
-                      <footer [ngClass]="{ 'start-buttons': showWarning || isQuizEnded}" [@slideDownUp]>
-                        <ng-container *ngIf="isQuizEnded">
-                          <button class="exit_btn rounded" (click)="exit()" [@fadeInOut]>
-                            {{ content.buttons.quitQuiz[this.currentLanguage] }}
-                          </button>
-                          <button *ngIf="!questionsList[this.currentQuestionNo].question.isWithTiming 
-                              || (questionsList[this.currentQuestionNo].question.isWithTiming && remainingTime == 0) 
-                              || isMiniQuiz" class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>
-                            {{ content.buttons.replayQuiz[this.currentLanguage] }}
-                          </button>
-                        </ng-container>
-                      </footer>
-                    </div>
-                  </div>
-                </div>
-                <mat-accordion class="questions-accordion" *ngIf="questionsList.length>0">
-                  <ng-container *ngFor="let questionObj of questionsList; let i = index" [@slideDownUp]>
-                    <mat-expansion-panel>
-                      <mat-expansion-panel-header class="mat-expansion-panel-header">
-                        <div class="panel-header-content">
-                          <mat-panel-title class="title">
-                            <div class="que_text">
-                              <span>
-                                {{i+1}}.
-                                <ng-container *ngIf="questionObj.type === 'FILL_BLANKS'; else showQuestionText">
-                                  <ng-container *ngIf="questionObj.question.isDragWords">
-                                    {{ content.summary.dragWordsQuestion[this.currentLanguage] }}
-                                  </ng-container>
-                                  <ng-container *ngIf="!questionObj.question.isDragWords">
-                                    {{ content.summary.fillBlanksQuestion[this.currentLanguage] }}
-                                  </ng-container>
-                                </ng-container>
-                                <ng-template #showQuestionText>
-                                  {{questionObj.question.text}}
-                                </ng-template>
-                              </span>
-                            </div>
-                          </mat-panel-title>
-                          <div class="score">
-                            1/10
-                          </div>
+                  *ngIf="questionsList[currentQuestionNo].type === 'FILL_BLANKS' && !questionsList[currentQuestionNo].isDragWords">
+                  <ng-container
+                    *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz; else responseValidate">
+                    <div class="content" *ngIf="this.questionsList[this.currentQuestionNo].textBlocks" [@fadeInOut]>
+                      <ng-container *ngFor="let block of this.questionsList[this.currentQuestionNo].textBlocks;">
+                        <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
+                        <div class="input_container" *ngIf="block.isSelected">
+                          <input class="input" [(ngModel)]="block.word" (input)="onTextareaInput()"
+                            [ngStyle]="{ width: calculateInputWidth(block) }" />
                         </div>
-                      </mat-expansion-panel-header>
-                      <!-- Answer -->
-                      <span class="text label">{{ content.summary.yourAnswer[this.currentLanguage] }}</span>
-                      <div class="content" [ngClass]="{ 'grid': questionObj.type !== 'FILL_BLANKS', 
-                                                        'correct': questionObj.question.isCorrect, 
-                                                        'incorrect': !questionObj.question.isCorrect}">
-                        <span>
-                          <mat-icon class="icon" *ngIf="questionObj.question.isCorrect">check_circle</mat-icon>
-                          <mat-icon class="icon" *ngIf="!questionObj.question.isCorrect">error</mat-icon>
+                        <span *ngIf="block.specialCharacter">
+                          {{ block.specialCharacter}}
                         </span>
-                        <ng-container *ngIf="questionObj.type === 'CHOICE' || questionObj.type === 'TRUE_FALSE'">
-                          <ng-container *ngFor="let option of questionObj.question.options;">
+                        {{' '}}
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </div>
+
+                <!-- Drag the words question -->
+                <div class="fill_container"
+                  *ngIf="questionsList[currentQuestionNo].type === 'FILL_BLANKS' && questionsList[currentQuestionNo].isDragWords">
+                  <ng-container
+                    *ngIf="(!questionsList[this.currentQuestionNo].isValidate && isMiniQuiz) || !isMiniQuiz; else responseValidate">
+                    <div class="content" *ngIf="hasDraggableHiddenWords()" [@slideDownUp]>
+                      <div class="draggable-words">
+                        <div *ngFor="let dragWord of questionsList[currentQuestionNo].hiddenWords">
+                          <span (dragstart)="onDragStart($event, dragWord)" (click)="onClickStart(dragWord)">
+                            <div class="draggable-word" *ngIf="dragWord.isDraggable" draggable="true">
+                              {{ dragWord.word }}
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="content block" *ngIf="this.questionsList[this.currentQuestionNo].textBlocks"
+                      [@fadeInOut]>
+                      <ng-container *ngFor="let block of this.questionsList[this.currentQuestionNo].textBlocks;">
+                        <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
+                        <div class="input_container" *ngIf="block.isSelected">
+                          <span class="input" role="textbox" contenteditable="false"
+                            [attr.placeholder]="getDropHereTranslation()" (dragover)="onDragOver($event)"
+                            (click)="onClickEnd()" [draggable]="currentDroppedWord ? 'true' : 'false'"
+                            (drop)="onDrop($event,block)">
+                            <ng-container *ngIf="block.word">{{block.word}}</ng-container>
+                          </span>
+                        </div>
+                        <span *ngIf="block.specialCharacter">
+                          {{ block.specialCharacter}}
+                        </span>
+                        {{' '}}
+                      </ng-container>
+                      <div class="refresh-icon" [ngClass]="rightToLeft() ? 'right' : 'left'"
+                        (click)="refreshDragDropContent(this.questionsList[this.currentQuestionNo])"
+                        *ngIf="!hasDraggableHiddenWords()" [@fadeInOut]>
+                        <mat-icon>refresh</mat-icon>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+                <!--Drag_Words-->
+
+                <ng-template #responseValidate>
+
+                  <div class="gif">
+                    <ng-container *ngIf="questionsList[this.currentQuestionNo].isCorrect">
+                      <img src="/assets/correct.jpg" alt="Animated GIF" height="130px">
+                    </ng-container>
+                    <ng-container *ngIf="!questionsList[this.currentQuestionNo].isCorrect">
+                      <img src="/assets/wrong.jpg" alt="Animated GIF" height="130px">
+                    </ng-container>
+                  </div>
+
+                  <div class="questions-accordion validation">
+                    <!-- Answer -->
+                    <span class="text label">{{ content.summary.yourAnswer[this.currentLanguage] }}</span>
+                    <div class="content" [ngClass]="{ 'grid': questionsList[currentQuestionNo].type !== 'FILL_BLANKS', 
+                                                        'correct': questionsList[currentQuestionNo].isCorrect, 
+                                                        'incorrect': !questionsList[currentQuestionNo].isCorrect}">
+                      <ng-container
+                        *ngIf="questionsList[currentQuestionNo].type === 'CHOICE' || questionsList[currentQuestionNo].type === 'TRUE_FALSE'">
+                        <div class="list" *ngIf="isOptionSelected(questionsList[currentQuestionNo].options)">
+                          <ng-container *ngFor="let option of questionsList[currentQuestionNo].options;">
                             <span class="text option" *ngIf="option.isSelected">
                               {{option.text}}
                             </span>
                           </ng-container>
-                          <span class="text" *ngIf="!isOptionSelected(questionObj.question.options)">
-                            {{ content.summary.noOptionChosen[this.currentLanguage] }}
-                          </span>
-                        </ng-container>
-                        <ng-container *ngIf="questionObj.type === 'FILL_BLANKS'">
-                          <ng-container *ngFor="let block of questionObj.question.textBlocks;">
+                        </div>
+
+                        <span class="text block" *ngIf="!isOptionSelected(questionsList[currentQuestionNo].options)">
+                          {{ content.summary.noOptionChosen[this.currentLanguage] }}
+                        </span>
+                      </ng-container>
+
+                      <ng-container *ngIf="questionsList[currentQuestionNo].type === 'FILL_BLANKS'">
+                        <div class="block">
+                          <ng-container *ngFor="let block of questionsList[currentQuestionNo].textBlocks;">
                             <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
                             <div class="input_container" *ngIf="block.isSelected">
                               <span class="input" role="textbox" contenteditable="false">
@@ -310,26 +209,161 @@
                             </span>
                             {{' '}}
                           </ng-container>
+                        </div>
+                      </ng-container>
+                    </div>
+                    <!-- Correct answer -->
+                    <span class="text label">{{ content.tipText.correctAnswer[this.currentLanguage] }}</span>
+                    <div class="content correct"
+                      [ngClass]="{ 'grid': questionsList[currentQuestionNo].type !== 'FILL_BLANKS'}">
+                      <div class="list">
+                        <span class="text" *ngFor="let response of questionsList[currentQuestionNo].responses">
+                          {{response}}
+                        </span>
+                      </div>
+                    </div>
+                    <!-- Explanation -->
+                    <span class="text label">{{ content.tipText.explanation[this.currentLanguage] }}</span>
+                    <div class="content explanation">
+                      <span *ngIf="questionsList[currentQuestionNo].isCorrect" class="text">
+                        {{questionsList[currentQuestionNo].correctAnswerTip}}
+                      </span>
+                      <span *ngIf="!questionsList[currentQuestionNo].isCorrect" class="text">
+                        {{questionsList[currentQuestionNo].incorrectAnswerTip}}
+                      </span>
+                    </div>
+                  </div>
+                </ng-template>
+
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="isQuizEnded">
+              <div class="main-container">
+
+                <div class="congratulations-container" *ngIf="!isMiniQuiz">
+                  <div class="congratulations-content">
+                    <img src="{{getCertification()}}" class="certification-image" alt="Certification Image" />
+                    <div class="text-container px-4">
+                      <h2 class="congratulations-title">
+                        <ng-container *ngIf="isArchived; else isUnarchivedTitle">
+                          {{ content.messages.quizCongratulationsTitle[this.currentLanguage] }}
                         </ng-container>
+                        <ng-template #isUnarchivedTitle>
+                          {{ content.messages.notArchived[this.currentLanguage] }}
+                        </ng-template>
+                      </h2>
+                      <p class="score-text">
+                        {{ content.messages.quizScoreText[this.currentLanguage] }}
+                        {{ score }} out of 100.
+                      </p>
+                      <p class="score-text">
+                        <ng-container *ngIf="isArchived; else Invite">
+                          {{ content.messages.quizFinishText[this.currentLanguage] }}
+                        </ng-container>
+                        <ng-template #Invite>
+                          {{ content.messages.inviteToExam[this.currentLanguage] }}
+                        </ng-template>
+                      </p>
+                      <footer [ngClass]="{ 'start-buttons': showWarning || isQuizEnded}" [@slideDownUp]>
+                        <button class="exit_btn rounded" (click)="exit()" [@fadeInOut]>
+                          {{ content.buttons.quitQuiz[this.currentLanguage] }}
+                        </button>
+                        <ng-container *ngIf="isArchived; else isUnarchived">
+                          <button class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>
+                            Get your certification now
+                          </button>
+                        </ng-container>
+                        <ng-template #isUnarchived>
+                          <button class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>
+                            {{ content.buttons.replayQuiz[this.currentLanguage] }}
+                          </button>
+                        </ng-template>
+                      </footer>
+                    </div>
+                  </div>
+                </div>
+
+                <mat-accordion class="questions-accordion" *ngIf="questionsList.length>0" [multi]="true">
+                  <ng-container *ngFor="let questionObj of questionsList; let i = index" [@slideDownUp]>
+                    <mat-expansion-panel [ngClass]="{ 'correct': questionObj.isCorrect, 
+                                                        'incorrect': !questionObj.isCorrect}" [expanded]="true"
+                      [disabled]="true" hideToggle>
+                      <mat-expansion-panel-header class="mat-expansion-panel-header">
+                        <div class="panel-header-content">
+                          <mat-panel-title class="title">
+                            <div class="que_text">
+                              <span>
+                                {{i+1}}.
+                                <ng-container *ngIf="questionObj.type === 'FILL_BLANKS'; else showQuestionText">
+                                  <ng-container *ngIf="questionObj.isDragWords">
+                                    {{ content.summary.dragWordsQuestion[this.currentLanguage] }}
+                                  </ng-container>
+                                  <ng-container *ngIf="!questionObj.isDragWords">
+                                    {{ content.summary.fillBlanksQuestion[this.currentLanguage] }}
+                                  </ng-container>
+                                </ng-container>
+                                <ng-template #showQuestionText>
+                                  {{questionObj.text}}
+                                </ng-template>
+                              </span>
+                            </div>
+                          </mat-panel-title>
+                        </div>
+                      </mat-expansion-panel-header>
+                      <!-- Answer -->
+                      <span class="text label">{{ content.summary.yourAnswer[this.currentLanguage] }}</span>
+                      <div class="content" [ngClass]="{ 'grid': questionObj.type !== 'FILL_BLANKS', 
+                                                        'correct': questionObj.isCorrect, 
+                                                        'incorrect': !questionObj.isCorrect}">
+                        <ng-container *ngIf="questionObj.type === 'CHOICE' || questionObj.type === 'TRUE_FALSE'">
+                          <div class="list" *ngIf="isOptionSelected(questionObj.options)">
+                            <ng-container *ngFor="let option of questionObj.options;">
+                              <span class="text option" *ngIf="option.isSelected">
+                                {{option.text}}
+                              </span>
+                            </ng-container>
+                          </div>
+                          <span class="text option" *ngIf="!isOptionSelected(questionObj.options)">
+                            {{ content.summary.noOptionChosen[this.currentLanguage] }}
+                          </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="questionObj.type === 'FILL_BLANKS'">
+                          <div class="block">
+                            <ng-container *ngFor="let block of questionObj.textBlocks;">
+                              <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
+                              <div class="input_container" *ngIf="block.isSelected">
+                                <span class="input" role="textbox" contenteditable="false">
+                                  <ng-container *ngIf="block.word">{{block.word}}</ng-container>
+                                </span>
+                              </div>
+                              <span *ngIf="block.specialCharacter">
+                                {{ block.specialCharacter}}
+                              </span>
+                              {{' '}}
+                            </ng-container>
+                          </div>
+                        </ng-container>
+
                       </div>
                       <!-- Correct answer -->
                       <span class="text label">{{ content.tipText.correctAnswer[this.currentLanguage] }}</span>
                       <div class="content correct" [ngClass]="{ 'grid': questionObj.type !== 'FILL_BLANKS'}">
-                        <span>
-                          <mat-icon class="icon">check_circle</mat-icon>
-                        </span>
-                        <span class="text" *ngFor="let response of questionObj.responses">
-                          {{response}}
-                        </span>
+                        <div class="list">
+                          <span class="text" *ngFor="let response of questionObj.responses">
+                            {{response}}
+                          </span>
+                        </div>
                       </div>
                       <!-- Explanation -->
                       <span class="text label">{{ content.tipText.explanation[this.currentLanguage] }}</span>
                       <div class="content explanation">
-                        <span *ngIf="questionObj.question.isCorrect" class="text">
-                          {{questionObj.question.correctAnswerTipText}}
+                        <span *ngIf="questionObj.isCorrect" class="text">
+                          {{questionObj.correctAnswerTip}}
                         </span>
-                        <span *ngIf="!questionObj.question.isCorrect" class="text">
-                          {{questionObj.question.incorrectAnswerTipText}}
+                        <span *ngIf="!questionObj.isCorrect" class="text">
+                          {{questionObj.incorrectAnswerTip}}
                         </span>
                       </div>
                     </mat-expansion-panel>
@@ -337,67 +371,64 @@
                 </mat-accordion>
               </div>
             </ng-container>
-
           </section>
-
           <footer [ngClass]="{ 'start-buttons': showWarning || isQuizEnded}" *ngIf="!(isQuizEnded && !isMiniQuiz)"
             [@slideDownUp]>
             <ng-container *ngIf="showWarning">
-              <button mat-raised-button class="exit_btn rounded" (click)="exit()">{{
-                content.buttons.exitQuiz[this.currentLanguage] }}</button>
-
-              <button mat-raised-button class="next_btn rounded" *ngIf="isContinueExam" (click)="ContinueQuiz()">{{
-                content.buttons.continueQuiz[this.currentLanguage] }}</button>
-
-
-              <!--=<button mat-raised-button class="next_btn rounded" *ngIf="remainingTime === 0 && !isContinueExam" 
-                      (click)="startQuiz()">{{ content.buttons.startQuiz[this.currentLanguage] }}</button>-->
-
-              <button mat-raised-button class="next_btn rounded" *ngIf="!isContinueExam" (click)="startQuiz()">{{
-                content.buttons.startQuiz[this.currentLanguage] }}</button>
+              <button mat-raised-button class="exit_btn rounded" (click)="exit()">
+                {{ content.buttons.exitQuiz[this.currentLanguage] }}
+              </button>
+              <button mat-raised-button class="next_btn rounded" (click)="startQuiz()">
+                {{ content.buttons.startQuiz[this.currentLanguage] }}
+              </button>
             </ng-container>
 
-            <ng-container *ngIf="isQuizStarted">
+            <ng-container *ngIf="isQuizStarted && questionsList.length>0">
               <div class="total_que">
                 <span>
-                  <p>{{nbQuestionsAttempted? nbQuestionsAttempted+currentQuestionNo+1 : currentQuestionNo+1}}</p> {{
+                  <p>{{currentQuestionNo+1}}</p> {{
                   content.messages.questionsCounterOf[this.currentLanguage] }}
                   <p>{{ !isMiniQuiz ? totalQuestions : questionsList.length }}</p>
                   {{ content.messages.questionsCounterQue[this.currentLanguage] }}
                 </span>
               </div>
-              <div>
+              <div class="flex">
 
-                <button class="exit_btn rounded mx-4" (click)="stop()" [@fadeInOut]>{{
-                  content.buttons.quitQuiz[this.currentLanguage] }}</button>
+                <!--<button class="exit_btn rounded mx-4" (click)="stop()" [@fadeInOut]>{{
+                  content.buttons.quitQuiz[this.currentLanguage] }}</button>-->
+
+                <ng-container *ngIf="currentQuestionNo !== 0">
+                  <button class="next_btn rounded mx-4" (click)="previewQuestion()" [@fadeInOut]>{{
+                    content.buttons.previewQuestion[this.currentLanguage] }}</button>
+                </ng-container>
+
+                <button *ngIf="(isMiniQuiz && !questionsList[this.currentQuestionNo].isValidate)"
+                  class="next_btn rounded" (click)="validateAnswer()" [disabled]="!isAnswered()" [@fadeInOut]>
+                  {{ content.buttons.validate[this.currentLanguage] }}
+                </button>
+
+                <ng-container *ngIf="currentQuestionNo+1 !== questionsList.length">
+                  <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].isValidate) 
+                                || !isMiniQuiz" class="next_btn rounded" [disabled]="!isAnswered()"
+                    (click)="nextQuestion()" [@fadeInOut]>
+                    {{ content.buttons.nextQuestion[this.currentLanguage] }}</button>
+                </ng-container>
+
+
                 <ng-container *ngIf="currentQuestionNo+1 == questionsList.length">
-                  <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].question.isValidate 
-                                && questionsList[this.currentQuestionNo].question.isCorrect ) 
-                                || !isMiniQuiz" class="next_btn rounded" (click)="validateAndProceed()" [@fadeInOut]>{{
+                  <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].isValidate ) 
+                                || !isMiniQuiz " class="next_btn rounded" [disabled]="!isAnswered()"
+                    (click)="validateAndProceed()" [@fadeInOut]>{{
                     content.buttons.finishQuiz[this.currentLanguage] }}</button>
                 </ng-container>
 
-
-                <button
-                  *ngIf="(isMiniQuiz && !questionsList[this.currentQuestionNo].question.isValidate) || (isMiniQuiz && !questionsList[this.currentQuestionNo].question.isCorrect)"
-                  class="next_btn rounded" (click)="validateAnswer()" [@fadeInOut]>{{
-                  content.buttons.validate[this.currentLanguage] }}</button>
-
-                <ng-container *ngIf="currentQuestionNo+1 !== questionsList.length">
-                  <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].question.isValidate 
-                                && questionsList[this.currentQuestionNo].question.isCorrect ) 
-                                || !isMiniQuiz" class="next_btn rounded" (click)="nextQuestion()" [@fadeInOut]>{{
-                    content.buttons.nextQuestion[this.currentLanguage] }}</button>
-                </ng-container>
               </div>
             </ng-container>
 
             <ng-container *ngIf="isQuizEnded">
               <button class="exit_btn rounded" (click)="exit()" [@fadeInOut]>{{
                 content.buttons.quitQuiz[this.currentLanguage] }}</button>
-              <button
-                *ngIf="!questionsList[this.currentQuestionNo].question.isWithTiming || (questionsList[this.currentQuestionNo].question.isWithTiming && remainingTime == 0) || isMiniQuiz"
-                class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>{{
+              <button *ngIf="isMiniQuiz" class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>{{
                 content.buttons.replayQuiz[this.currentLanguage] }}</button>
             </ng-container>
           </footer>

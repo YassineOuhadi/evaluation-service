@@ -2,139 +2,150 @@
   <div mat-dialog-content class="flex-container">
     <div class="card-container">
       <mat-card class="shadow-md box p-0">
-        <mat-card-content>   
+        <mat-card-content>
 
           <header [@slideDownUp]>
-            <div class="title">{{data.questionObj.question.code}}</div>
-            <div class="timer" *ngIf="data.questionObj.question.isWithTiming" [@fadeInOut]>
-              <div class="time_left_txt">{{ content.timer.timeOff[this.currentLanguage] }}</div>
-              <div class="timer_sec">{{remainingTime}}</div>
-            </div>
-          </header>            
-          
+            <div class="title">{{data.questionObj.code}}</div>
+
+          </header>
+
           <section>
-               <div class="que_text">
-                  <span>
-                    <ng-container *ngIf="data.questionObj.type === 'FILL_BLANKS'; else showQuestionText">
-                      <ng-container *ngIf="data.questionObj.question.isDragWords">
-                        {{ content.que_text.dragWords[this.currentLanguage] }}
-                      </ng-container>
-                      <ng-container *ngIf="!data.questionObj.question.isDragWords">
-                        {{ content.que_text.fillBlanks[this.currentLanguage] }}
-                      </ng-container>
-                    </ng-container>
-                    <ng-template #showQuestionText>
-                      {{data.questionObj.question.text}}
-                    </ng-template>
-                  </span>
-                </div>
-  
-                <div class="option_list" *ngIf="data.questionObj.type === 'CHOICE' || data.questionObj.type === 'TRUE_FALSE'">
-                  <div class="option" [ngClass]="{'selected': option.isSelected }" (click)="selectOption(data.questionObj, option)" *ngFor="let option of data.questionObj.question.options" [@slideDownUp]>
-                    <input type="checkbox" [checked]="option.isSelected" (click)="selectOption(data.questionObj, option)" *ngIf="data.questionObj.question.isMultipleChoice">
-                    <input type="radio" [checked]="option.isSelected" (click)="selectOption(data.questionObj, option)" *ngIf="!data.questionObj.question.isMultipleChoice || data.questionObj.type === 'TRUE_FALSE'">
-                    <span class="mx-4">{{option.text}}</span>
-                  </div>
-                  <div class="content" [ngClass]="{ 'correct': data.questionObj.question.isCorrect, 'incorrect': !data.questionObj.question.isCorrect}" *ngIf="data.questionObj.question.isValidate" style="justify-content: flex-start;display: flex;">
-                    <mat-icon class="icon" *ngIf="data.questionObj.question.isCorrect">check_circle</mat-icon>
-                    <mat-icon class="icon" *ngIf="!data.questionObj.question.isCorrect">error</mat-icon>
-                    <span *ngIf="data.questionObj.question.isCorrect" class="text mx-2">{{ content.tipText.correctAnswer[this.currentLanguage] }} {{data.questionObj.question.correctAnswerTipText}}</span>
-                    <span *ngIf="!data.questionObj.question.isCorrect" class="text mx-2">{{ content.tipText.incorrectAnswer[this.currentLanguage] }} {{data.questionObj.question.incorrectAnswerTipText}}</span>
-                  </div>
-                </div>
-        
-                <div class="fill_container" *ngIf="data.questionObj.type === 'FILL_BLANKS' && !data.questionObj.question.isDragWords">   
-                  <div class="content" *ngIf="data.questionObj.question.textBlocks" [@fadeInOut]>
-                    <ng-container *ngFor="let block of this.data.questionObj.question.textBlocks;">
-                      <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
-                      <div class="input_container" *ngIf="block.isSelected">
-                        <input
-                          class="input"
-                          [(ngModel)]="block.word"
-                          (input)="onTextareaInput(data.questionObj)"
-                          [ngStyle]="{ width: calculateInputWidth(block) }"
-                        />                                               
-                      </div>
-                      <span *ngIf="block.specialCharacter">
-                        {{ block.specialCharacter}}
-                      </span>
-                      {{' '}}
-                    </ng-container>                                               
-                  </div>
-                  <div class="content" [ngClass]="{ 'correct': data.questionObj.question.isCorrect, 'incorrect': !data.questionObj.question.isCorrect}" 
-                       *ngIf=" data.questionObj.question.isValidate" style="justify-content: flex-start;display: flex;">
-                    <mat-icon class="icon" *ngIf="data.questionObj.question.isCorrect">check_circle</mat-icon>
-                    <mat-icon class="icon" *ngIf="!data.questionObj.question.isCorrect">error</mat-icon>
-                    <span *ngIf="data.questionObj.question.isCorrect" class="text mx-2">{{ content.tipText.correctAnswer[this.currentLanguage] }} {{data.questionObj.question.correctAnswerTipText}}</span>
-                    <span *ngIf="!data.questionObj.question.isCorrect" class="text mx-2">{{ content.tipText.incorrectAnswer[this.currentLanguage] }} {{data.questionObj.question.incorrectAnswerTipText}}</span>
-                  </div>
-                </div>
-        
-               <!--Drag_Words -->
-               <div class="fill_container" *ngIf="data.questionObj.type === 'FILL_BLANKS' && data.questionObj.question.isDragWords">             
-                <div class="content" *ngIf="hasDraggableHiddenWords()" [@slideDownUp]>
-                  <div class="draggable-words">
-                    <div *ngFor="let dragWord of data.questionObj.question.hiddenWords">
-                      <span (dragstart)="onDragStart($event, dragWord)" (click)="onClickStart(dragWord)">
-                        <div class="draggable-word" *ngIf="dragWord.isDraggable" draggable="true">
-                          {{ dragWord.word }}
-                        </div>
-                      </span>
-                    </div>
-                  </div>
-                </div>       
-                <div class="content block" *ngIf="this.data.questionObj.question.textBlocks" [@fadeInOut]>
-                  <ng-container *ngFor="let block of this.data.questionObj.question.textBlocks;">
-                    <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
-                    <div class="input_container" *ngIf="block.isSelected">
-                      <span
-                        class="input"
-                        role="textbox"
-                        contenteditable="false" [attr.placeholder]="getDropHereTranslation()"
-                        (dragover)="onDragOver($event)"   (click)="onClickEnd()"
-                        [draggable]="currentDroppedWord ? 'true' : 'false'"
-                        (drop)="onDrop($event,block)">
-                        <ng-container *ngIf="block.word">{{block.word}}</ng-container>
-                      </span>
-                    </div>
-                    <span *ngIf="block.specialCharacter">
-                      {{ block.specialCharacter}}
-                    </span>
-                    {{' '}}
+            <div class="que_text">
+              <span>
+                <ng-container *ngIf="data.questionObj.type === 'FILL_BLANKS'; else showQuestionText">
+                  <ng-container *ngIf="data.questionObj.isDragWords">
+                    {{ content.que_text.dragWords[this.currentLanguage] }}
                   </ng-container>
-                  <div class="refresh-icon" [ngClass]="rightToLeft() ? 'right' : 'left'" (click)="refreshContent()" *ngIf="!hasDraggableHiddenWords()" [@fadeInOut]>
-                    <mat-icon>refresh</mat-icon>
+                  <ng-container *ngIf="!data.questionObj.isDragWords">
+                    {{ content.que_text.fillBlanks[this.currentLanguage] }}
+                  </ng-container>
+                </ng-container>
+                <ng-template #showQuestionText>
+                  {{data.questionObj.text}}
+                </ng-template>
+              </span>
+            </div>
+
+            <div class="option_list"
+              *ngIf="data.questionObj.type === 'CHOICE' || data.questionObj.type === 'TRUE_FALSE'">
+              <div class="option" [ngClass]="{'selected': option.isSelected }"
+                (click)="selectOption(data.questionObj, option)" *ngFor="let option of data.questionObj.options"
+                [@slideDownUp]>
+                <input type="checkbox" [checked]="option.isSelected" (click)="selectOption(data.questionObj, option)"
+                  *ngIf="data.questionObj.isMultipleChoice">
+                <input type="radio" [checked]="option.isSelected" (click)="selectOption(data.questionObj, option)"
+                  *ngIf="!data.questionObj.isMultipleChoice || data.questionObj.type === 'TRUE_FALSE'">
+                <span class="mx-4">{{option.text}}</span>
+              </div>
+              <div class="content"
+                [ngClass]="{ 'correct': data.questionObj.isCorrect, 'incorrect': !data.questionObj.isCorrect}"
+                *ngIf="data.questionObj.isValidate" style="justify-content: flex-start;display: flex;">
+                <mat-icon class="icon" *ngIf="data.questionObj.isCorrect">check_circle</mat-icon>
+                <mat-icon class="icon" *ngIf="!data.questionObj.isCorrect">error</mat-icon>
+                <span *ngIf="data.questionObj.isCorrect" class="text mx-2">{{
+                  content.tipText.correctAnswer[this.currentLanguage] }} {{data.questionObj.correctAnswerTip}}</span>
+                <span *ngIf="!data.questionObj.isCorrect" class="text mx-2">{{
+                  content.tipText.incorrectAnswer[this.currentLanguage] }}
+                  {{data.questionObj.incorrectAnswerTip}}</span>
+              </div>
+            </div>
+
+            <div class="fill_container"
+              *ngIf="data.questionObj.type === 'FILL_BLANKS' && !data.questionObj.isDragWords">
+              <div class="content" *ngIf="data.questionObj.textBlocks" [@fadeInOut]>
+                <ng-container *ngFor="let block of this.data.questionObj.textBlocks;">
+                  <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
+                  <div class="input_container" *ngIf="block.isSelected">
+                    <input class="input" [(ngModel)]="block.word" (input)="onTextareaInput(data.questionObj)"
+                      [ngStyle]="{ width: calculateInputWidth(block) }" />
                   </div>
-                </div>     
-                <div class="content" [ngClass]="{ 'correct': data.questionObj.question.isCorrect, 'incorrect': !data.questionObj.question.isCorrect}" 
-                    *ngIf=" data.questionObj.question.isValidate" style="justify-content: flex-start;display: flex;">
-                  <mat-icon class="icon" *ngIf="data.questionObj.question.isCorrect">check_circle</mat-icon>
-                  <mat-icon class="icon" *ngIf="!data.questionObj.question.isCorrect">error</mat-icon>
-                  <span *ngIf="data.questionObj.question.isCorrect" class="text mx-2">{{ content.tipText.correctAnswer[this.currentLanguage] }} {{data.questionObj.question.correctAnswerTipText}}</span>
-                  <span *ngIf="!data.questionObj.question.isCorrect" class="text mx-2">{{ content.tipText.incorrectAnswer[this.currentLanguage] }} {{data.questionObj.question.incorrectAnswerTipText}}</span>
+                  <span *ngIf="block.specialCharacter">
+                    {{ block.specialCharacter}}
+                  </span>
+                  {{' '}}
+                </ng-container>
+              </div>
+              <div class="content"
+                [ngClass]="{ 'correct': data.questionObj.isCorrect, 'incorrect': !data.questionObj.isCorrect}"
+                *ngIf=" data.questionObj.isValidate" style="justify-content: flex-start;display: flex;">
+                <mat-icon class="icon" *ngIf="data.questionObj.isCorrect">check_circle</mat-icon>
+                <mat-icon class="icon" *ngIf="!data.questionObj.isCorrect">error</mat-icon>
+                <span *ngIf="data.questionObj.isCorrect" class="text mx-2">{{
+                  content.tipText.correctAnswer[this.currentLanguage] }} {{data.questionObj.correctAnswerTip}}</span>
+                <span *ngIf="!data.questionObj.isCorrect" class="text mx-2">{{
+                  content.tipText.incorrectAnswer[this.currentLanguage] }}
+                  {{data.questionObj.incorrectAnswerTip}}</span>
+              </div>
+            </div>
+
+            <!--Drag_Words -->
+            <div class="fill_container" *ngIf="data.questionObj.type === 'FILL_BLANKS' && data.questionObj.isDragWords">
+              <div class="content" *ngIf="hasDraggableHiddenWords()" [@slideDownUp]>
+                <div class="draggable-words">
+                  <div *ngFor="let dragWord of data.questionObj.hiddenWords">
+                    <span (dragstart)="onDragStart($event, dragWord)" (click)="onClickStart(dragWord)">
+                      <div class="draggable-word" *ngIf="dragWord.isDraggable" draggable="true">
+                        {{ dragWord.word }}
+                      </div>
+                    </span>
+                  </div>
                 </div>
-               </div>
-               <!-- Drag_Words -->
+              </div>
+              <div class="content block" *ngIf="this.data.questionObj.textBlocks" [@fadeInOut]>
+                <ng-container *ngFor="let block of this.data.questionObj.textBlocks;">
+                  <span class="text" *ngIf="!block.isSelected">{{ block.word }}</span>
+                  <div class="input_container" *ngIf="block.isSelected">
+                    <span class="input" role="textbox" contenteditable="false"
+                      [attr.placeholder]="getDropHereTranslation()" (dragover)="onDragOver($event)"
+                      (click)="onClickEnd()" [draggable]="currentDroppedWord ? 'true' : 'false'"
+                      (drop)="onDrop($event,block)">
+                      <ng-container *ngIf="block.word">{{block.word}}</ng-container>
+                    </span>
+                  </div>
+                  <span *ngIf="block.specialCharacter">
+                    {{ block.specialCharacter}}
+                  </span>
+                  {{' '}}
+                </ng-container>
+                <div class="refresh-icon" [ngClass]="rightToLeft() ? 'right' : 'left'" (click)="refreshContent()"
+                  *ngIf="!hasDraggableHiddenWords()" [@fadeInOut]>
+                  <mat-icon>refresh</mat-icon>
+                </div>
+              </div>
+              <div class="content"
+                [ngClass]="{ 'correct': data.questionObj.isCorrect, 'incorrect': !data.questionObj.isCorrect}"
+                *ngIf=" data.questionObj.isValidate" style="justify-content: flex-start;display: flex;">
+                <mat-icon class="icon" *ngIf="data.questionObj.isCorrect">check_circle</mat-icon>
+                <mat-icon class="icon" *ngIf="!data.questionObj.isCorrect">error</mat-icon>
+                <span *ngIf="data.questionObj.isCorrect" class="text mx-2">{{
+                  content.tipText.correctAnswer[this.currentLanguage] }} {{data.questionObj.correctAnswerTip}}</span>
+                <span *ngIf="!data.questionObj.isCorrect" class="text mx-2">{{
+                  content.tipText.incorrectAnswer[this.currentLanguage] }}
+                  {{data.questionObj.incorrectAnswerTip}}</span>
+              </div>
+            </div>
+            <!-- Drag_Words -->
 
           </section>
 
           <footer [@slideDownUp]>
-            <button  class="exit_btn rounded" mat-dialog-close [@fadeInOut]>{{ content.buttons.exitQuiz[this.currentLanguage] }}</button>
+            <button class="exit_btn rounded" mat-dialog-close [@fadeInOut]>{{
+              content.buttons.exitQuiz[this.currentLanguage] }}</button>
 
-            
 
-            
 
-            <ng-container *ngIf="(data.questionObj.question.isValidate 
-                                && data.questionObj.question.isCorrect ); else validateResponse">
-             <button 
-                                class="next_btn rounded" [mat-dialog-close]="'finished'">
-                              {{ content.buttons.finishQuiz[this.currentLanguage] }}</button>
-              </ng-container>
 
-              <ng-template #validateResponse>
-              <button #validateResponse class="next_btn rounded" (click)="validateAnswer()">{{ content.buttons.validate[this.currentLanguage] }}</button>
-              </ng-template>
+
+            <ng-container *ngIf="(data.questionObj.isValidate 
+                                && data.questionObj.isCorrect ); else validateResponse">
+              <button class="next_btn rounded" [mat-dialog-close]="'finished'">
+                {{ content.buttons.finishQuiz[this.currentLanguage] }}</button>
+            </ng-container>
+
+            <ng-template #validateResponse>
+              <button #validateResponse class="next_btn rounded" (click)="validateAnswer()">{{
+                content.buttons.validate[this.currentLanguage] }}</button>
+            </ng-template>
 
           </footer>
         </mat-card-content>

@@ -29,6 +29,10 @@ body {
   background: #007bff;
 }
 
+input:not(:last-child) {
+  margin-bottom: 20px;
+}
+
 input[type="checkbox"],
 input[type="radio"] {
   width: 18px;

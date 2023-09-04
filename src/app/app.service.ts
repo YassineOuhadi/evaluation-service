@@ -27,11 +27,10 @@ export class AppService {
 
   /* List questions page */
 
-  deleteQuestion(questionId: any): Observable<any> {
-    const url = `${this.apiUrl}/question/delete`; // Replace with your actual API endpoint
+  deleteQuestions(questionIds: number[]): Observable<any> {
+    const url = `${this.apiUrl}/question/delete`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const params = new HttpParams().set('id', questionId);
-    return this.http.post(url, null, { headers, params });
+    return this.http.post(url, questionIds, { headers });
   }
 
   deleteQuestionFromCourse(data: any): Observable<any> {
@@ -103,12 +102,10 @@ export class AppService {
 
   /* final exam */
 
-  canTakeExam(campaignId: number, userId: number): Observable<boolean> {
+  canTakeExam(campaignProgressId: number): Observable<boolean> {
     const url = `${this.apiUrl}/exam/canTake`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const params = new HttpParams()
-      .set('campaignId', campaignId)
-      .set('userId', userId);
+    const params = new HttpParams().set('campaignProgressId', campaignProgressId);
     return this.http.get<boolean>(url, { headers, params });
   }
 
@@ -124,10 +121,10 @@ export class AppService {
     return this.http.post(url, data, { headers });
   }
 
-  quitExam(examId: number): Observable<any> {
+  quitExam(campaignProgressId: number): Observable<any> {
     const url = `${this.apiUrl}/exam/endExam`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const params = new HttpParams().set('examId', examId.toString());
+    const params = new HttpParams().set('campaignProgressId', campaignProgressId.toString());
     return this.http.post(url, null, { headers, params });
   }
 
@@ -148,13 +145,6 @@ export class AppService {
     const url = `${this.apiUrl}/question/validate`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post(url, data, { headers });
-  }
-
-  getAnswer(questionId: any): Observable<any> {
-    const url = `${this.apiUrl}/question/answer`;
-    const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const params = new HttpParams().set('idQuestion', questionId);
-    return this.http.get(url, { headers, params });
   }
 
   findQuestion(questionId: any): Observable<any> {

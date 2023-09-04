@@ -87,12 +87,13 @@
                         <mat-error *ngIf="!question.code && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                       </mat-form-field>
                       -->
-                        <input type="text" name="code" class="form-control" id="questionCode" maxlength="100"
-                          minlength="2" placeholder="{{ content.step.card.form.field.code[this.currentLanguage] }}"
+                        <input type="text" name="code{{question.id}}" class="form-control"
+                          id="questionCode{{question.id}}" maxlength="100" minlength="2"
+                          placeholder="{{ content.step.card.form.field.code[this.currentLanguage] }}"
                           [(ngModel)]="question.code" required [ngClass]="{
                           'is-invalid': (!question.code || question.code.trim()=== '') && isQuestionValidate(activeQuestionType),
                           'is-valid': question.code && question.code.trim()!== '' && isQuestionValidate(activeQuestionType)
-                        }" />
+                        }" [disabled]="isEditQuestion" />
                         <div *ngIf="!question.code && isQuestionValidate(activeQuestionType)" class="invalid-feedback">
                           <div>
                             {{ content.messages.fieldRequired[this.currentLanguage] }}
@@ -109,8 +110,8 @@
                           <mat-error *ngIf="!question.text && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                         </mat-form-field>
                         -->
-                          <input type="text" name="question" class="form-control mt-2" id="questionText" maxlength="100"
-                            minlength="2"
+                          <input type="text" name="question{{question.id}}" class="form-control mt-2"
+                            id="questionText{{question.id}}" maxlength="100" minlength="2"
                             placeholder="{{ content.step.card.form.field.question[this.currentLanguage] }}"
                             [(ngModel)]="question.text" required [ngClass]="{
                             'is-invalid': (!question.text || question.text.trim()=== '') && isQuestionValidate(activeQuestionType),
@@ -149,8 +150,8 @@
                                 <mat-error *ngIf="!option.text">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                               </mat-form-field>-->
 
-                                <textarea type="text" name="optionText" class="form-control" id="optionText"
-                                  maxlength="100" minlength="2"
+                                <textarea type="text" name="optionText{{option.id}}" class="form-control"
+                                  id="optionText{{option.text}}" maxlength="100" minlength="2"
                                   placeholder="{{ content.step.card.form.field.option.text[this.currentLanguage] }}"
                                   [(ngModel)]="option.text" required [ngClass]="{
                                 'is-invalid': (!option.text || option.text.trim()=== '') && isQuestionValidate(activeQuestionType),
@@ -187,8 +188,8 @@
                           <mat-error *ngIf="!question.text && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                         </mat-form-field>-->
 
-                          <input type="text" name="question" class="form-control mt-2" id="questionText" maxlength="100"
-                            minlength="2"
+                          <input type="text" name="question{{question.id}}" class="form-control mt-2" id="questionText"
+                            maxlength="100" minlength="2"
                             placeholder="{{ content.step.card.form.field.question[this.currentLanguage] }}"
                             [(ngModel)]="question.text" required [ngClass]="{
                                 'is-invalid': (!question.text || question.text.trim()=== '') && isQuestionValidate(activeQuestionType),
@@ -288,15 +289,15 @@
                             <mat-error *ngIf="!question.correctAnswerTipText && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                           </mat-form-field>-->
 
-                            <input type="text" name="correctAnswerTipText" class="form-control"
-                              id="correctAnswerTipText" maxlength="100" minlength="2"
+                            <input type="text" name="correctAnswerTipText{{question.id}}" class="form-control"
+                              id="correctAnswerTipText" maxlength="500" minlength="2"
                               placeholder="{{ content.step.card.form.field.tips.correct[this.currentLanguage] }}"
-                              [(ngModel)]="question.correctAnswerTipText" required [ngClass]="{
-                                  'is-invalid': (!question.correctAnswerTipText || question.correctAnswerTipText.trim()=== '') && isQuestionValidate(activeQuestionType),
-                                  'is-valid': question.correctAnswerTipText && question.correctAnswerTipText.trim()!== '' && isQuestionValidate(activeQuestionType)
+                              [(ngModel)]="question.correctAnswerTip" required [ngClass]="{
+                                  'is-invalid': (!question.correctAnswerTip || question.correctAnswerTip.trim()=== '') && isQuestionValidate(activeQuestionType),
+                                  'is-valid': question.correctAnswerTip && question.correctAnswerTip.trim()!== '' && isQuestionValidate(activeQuestionType)
                               }" />
                             <div
-                              *ngIf="(!question.correctAnswerTipText || question.correctAnswerTipText.trim()=== '') && isQuestionValidate(activeQuestionType)"
+                              *ngIf="(!question.correctAnswerTip || question.correctAnswerTip.trim()=== '') && isQuestionValidate(activeQuestionType)"
                               class="invalid-feedback">
                               <div>
                                 {{ content.messages.fieldRequired[this.currentLanguage] }}
@@ -309,53 +310,15 @@
                             <mat-error *ngIf="!question.incorrectAnswerTipText && isQuestionValidate(activeQuestionType)">{{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
                           </mat-form-field>-->
 
-                            <input type="text" name="incorrectAnswerTipText" class="form-control mt-2"
-                              id="incorrectAnswerTipText" maxlength="100" minlength="2"
+                            <input type="text" name="incorrectAnswerTipText{{question.id}}" class="form-control mt-2"
+                              id="incorrectAnswerTipText" maxlength="500" minlength="2"
                               placeholder="{{ content.step.card.form.field.tips.incorrect[this.currentLanguage] }}"
-                              [(ngModel)]="question.incorrectAnswerTipText" required [ngClass]="{
-                                  'is-invalid': (!question.incorrectAnswerTipText || question.incorrectAnswerTipText.trim()=== '') && isQuestionValidate(activeQuestionType),
-                                  'is-valid': question.incorrectAnswerTipText && question.incorrectAnswerTipText.trim()!== '' && isQuestionValidate(activeQuestionType)
+                              [(ngModel)]="question.incorrectAnswerTip" required [ngClass]="{
+                                  'is-invalid': (!question.incorrectAnswerTip || question.incorrectAnswerTip.trim()=== '') && isQuestionValidate(activeQuestionType),
+                                  'is-valid': question.incorrectAnswerTip && question.incorrectAnswerTip.trim()!== '' && isQuestionValidate(activeQuestionType)
                               }" />
                             <div
-                              *ngIf="(!question.incorrectAnswerTipText || question.incorrectAnswerTipText.trim()=== '') && isQuestionValidate(activeQuestionType)"
-                              class="invalid-feedback">
-                              <div>
-                                {{ content.messages.fieldRequired[this.currentLanguage] }}
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
-
-                        <div class="input-container">
-                          <h3 class="input-head opt" (click)="toggleSettings(question.type)">
-                            <mat-icon>{{ isSettingsOpen(question.type) ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon>
-                            {{ content.step.card.form.field.settings.title[this.currentLanguage] }}
-                          </h3>
-                          <div class="input-content" [@fadeInOut] *ngIf="isSettingsOpen(question.type)">
-                            <mat-checkbox class="checkbox mb-2" name="withTiming"
-                              [(ngModel)]="question.isWithTiming"><span class="mx-2">{{
-                                content.step.card.form.field.settings.withTiming[this.currentLanguage]
-                                }}</span></mat-checkbox>
-
-                            <!--<mat-form-field [ngClass]="{ 'rtl': !rightToLeft(), 'mb-2': !question.duration && isQuestionValidate(activeQuestionType) }" [appearance]="rightToLeft() ? 'outline' : 'fill'" *ngIf="question.isWithTiming">
-                            <mat-label>{{ content.step.card.form.field.settings.duration[this.currentLanguage] }}</mat-label>
-                            <input matInput type="number" name="questionDuration" 
-                                   [(ngModel)]="question.duration" 
-                                   [required]="isQuestionValidate(activeQuestionType)"
-                                   inputmode="numeric" pattern="[0-9]*" min="1">
-                            <mat-error *ngIf="!question.duration && isQuestionValidate(activeQuestionType)">
-                              {{ content.messages.fieldRequired[this.currentLanguage] }}</mat-error>
-                          </mat-form-field>-->
-
-                            <input type="number" name="questionDuration" class="form-control" id="questionDuration"
-                              inputmode="numeric" pattern="[0-9]*" min="1"
-                              placeholder="{{ content.step.card.form.field.settings.duration[this.currentLanguage] }}"
-                              [(ngModel)]="question.duration" *ngIf="question.isWithTiming" required [ngClass]="{
-                                  'is-invalid': !question.duration && isQuestionValidate(activeQuestionType),
-                                  'is-valid': question.duration  && isQuestionValidate(activeQuestionType)
-                              }" />
-                            <div *ngIf="!question.duration && isQuestionValidate(activeQuestionType)"
+                              *ngIf="(!question.incorrectAnswerTip || question.incorrectAnswerTip.trim()=== '') && isQuestionValidate(activeQuestionType)"
                               class="invalid-feedback">
                               <div>
                                 {{ content.messages.fieldRequired[this.currentLanguage] }}
@@ -370,8 +333,12 @@
                             (click)="cancelEdit()">Cancel</button>
                           <button mat-raised-button class="exit_btn rounded" type="button" *ngIf="!isEditQuestion"
                             matStepperPrevious>{{ content.step.card.button.previews[this.currentLanguage] }}</button>
-                          <button mat-raised-button class="next_btn rounded" type="button" (click)="areDataInvalid()"
-                            matStepperNext>{{ content.step.card.button.next[this.currentLanguage] }}</button>
+                          <div>
+                            <button mat-raised-button class="exit_btn rounded mx-4" type="button"
+                              (click)="initializeFields(question)">Initialize</button>
+                            <button mat-raised-button class="next_btn rounded" type="button" (click)="areDataInvalid()"
+                              matStepperNext>{{ content.step.card.button.next[this.currentLanguage] }}</button>
+                          </div>
                         </div>
                       </div>
                     </mat-expansion-panel-content>

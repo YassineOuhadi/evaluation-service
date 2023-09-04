@@ -1,0 +1,232 @@
+{
+  "header": {
+    "title": {
+      "en": "Cyber Security Evaluation",
+      "fr": "Évaluation de la cybersécurité",
+      "ar": "تقييم الأمان السيبراني"
+    }
+  },
+  "timer": {
+    "timeOff": {
+      "en": "Time Off",
+      "fr": "Temps écoulé",
+      "ar": "انتهى الوقت"
+    }
+  },
+  "quizRules": {
+    "en": "Some Rules of this Quiz",
+    "fr": "Quelques règles de ce quiz",
+    "ar": "بعض قواعد هذا الاختبار"
+  },
+  "ruleList": {
+    "en": [
+      "1. There is no time limit for each question.",
+      "2. Once you select your answer, it can't be changed.",
+      "3. You can attempt questions without any limit on the number of attempts.",
+      "4. Your score will be the highest score obtained.",
+      "5. You cannot navigate back to previous questions during the exam.",
+      "6. You have the option to quit the exam whenever you wish."
+    ],
+    "fr": [
+      "1. Il n'y a pas de limite de temps pour chaque question.",
+      "2. Une fois que vous avez choisi votre réponse, elle ne peut pas être modifiée.",
+      "3. Vous pouvez tenter les questions sans limite du nombre d'essais.",
+      "4. Votre score sera le score le plus élevé obtenu.",
+      "5. Vous ne pouvez pas revenir aux questions précédentes pendant l'examen.",
+      "6. Vous avez la possibilité de quitter l'examen quand vous le souhaitez."
+    ],
+    "ar": [
+      "1. لا يوجد وقت محدد لكل سؤال.",
+      "2. بمجرد اختيارك لإجابتك، لا يمكن تغييرها.",
+      "3. يمكنك محاولة الإجابة على الأسئلة دون قيود على عدد المحاولات.",
+      "4. سيتم احتساب أعلى درجة تم الحصول عليها كنقطة لك.",
+      "5. لا يمكنك العودة إلى الأسئلة السابقة أثناء الامتحان.",
+      "6. لديك خيار الخروج من الامتحان في أي وقت ترغب فيه."
+    ]
+  },
+  "que_text": {
+    "dragWords": {
+      "en": "Match the correct words to their corresponding spaces by dragging and dropping them :",
+      "fr": "Faites correspondre les mots corrects à leurs espaces correspondants en les faisant glisser et en les déposant :",
+      "ar": "قم بمطابقة الكلمات الصحيحة مع المساحات المقابلة لها عن طريق سحبها وإفلاتها :"
+    },
+    "fillBlanks": {
+      "en": "Fill in the missing words :",
+      "fr": "Complétez les mots manquants :",
+      "ar": "املأ الكلمات المفقودة :"
+    }
+  },
+  "tipText": {
+    "correctAnswer": {
+      "en": "Correct answer",
+      "fr": "Réponse correcte",
+      "ar": "الإجابة الصحيحة"
+    },
+    "incorrectAnswer": {
+      "en": "Incorrect answer",
+      "fr": "Réponse incorrecte",
+      "ar": "الإجابة الخاطئة"
+    },
+    "explanation": {
+      "en": "Explanation",
+      "fr": "Explication",
+      "ar": "تفسير"
+    },
+    "goodAnswer": {
+      "en": "Congratulations.. good answer",
+      "fr": "Félicitations.. bonne réponse",
+      "ar": "تهانينا.. إجابة جيدة"
+    },
+    "wrongAnswer": {
+      "en": "Oh! Incorrect answer",
+      "fr": "Oh ! Réponse incorrecte",
+      "ar": "أوه! إجابة غير صحيحة"
+    }
+  },
+  "messages": {
+    "quizCongratulationsTitle": {
+      "en": "Congratulations! You have completed the campaign.",
+      "fr": "Félicitations ! Vous avez terminé le campagne.",
+      "ar": "تهانينا! لقد أكملت الدورة."
+    },
+    "notArchived": {
+      "en": "Oh! You have not validated this campaign!",
+      "fr": "Oh ! Vous n'avez pas validé cette campagne !",
+      "ar": "أوه! لم تقم بالتحقق من هذه الحملة بعد!"
+    },
+    "inviteToExam": {
+      "en": "We invite you to review the lessons and try again.",
+      "fr": "Nous vous invitons à revoir les leçons et à réessayer.",
+      "ar": "ندعوك لمراجعة الدروس والمحاولة مرة أخرى."
+    },
+    "quizScoreText": {
+      "en": "Your score:",
+      "fr": "Votre score :",
+      "ar": "نقاطك:"
+    },
+    "quizFinishText": {
+      "en": "You have successfully finished the quiz. Get your certification now!",
+      "fr": "Vous avez terminé le quiz avec succès. Obtenez votre certification maintenant !",
+      "ar": "لقد أنهيت الاختبار بنجاح. احصل على شهادتك الآن!"
+    },
+    "summaryText": {
+      "en": "Summary",
+      "fr": "Résumé",
+      "ar": "ملخص"
+    },
+    "questionsCounterOf": {
+      "en": "of",
+      "fr": "sur",
+      "ar": "من"
+    },
+    "questionsCounterQue": {
+      "en": "Questions",
+      "fr": "questions",
+      "ar": "الأسئلة"
+    },
+    "welcome": {
+      "en": "Welcome to",
+      "fr": "Bienvenue sur",
+      "ar": "مرحبًا بك في"
+    },
+    "testDuration": {
+      "en": "Test duration",
+      "fr": "Durée du test",
+      "ar": "مدة الاختبار"
+    },
+    "durationMinutes": {
+      "en": "mins",
+      "fr": "minutes",
+      "ar": "دقيقة"
+    },
+    "numberOfQuestions": {
+      "en": "No. of questions",
+      "fr": "Nombre de questions",
+      "ar": "عدد الأسئلة"
+    },
+    "PLEASEANSWERQUESTION": {
+      "en": "Please answer the current question before proceeding.",
+      "fr": "Veuillez répondre à la question en cours avant de continuer.",
+      "ar": "الرجاء الإجابة على السؤال الحالي قبل المتابعة."
+    },
+    "close": {
+      "en": "Close",
+      "fr": "Fermer",
+      "ar": "إغلاق"
+    }
+  },
+  "summary": {
+    "dragWordsQuestion": {
+      "en": "Drag the words questions",
+      "fr": "Questions de glisser-déposer des mots",
+      "ar": "أسئلة سحب الكلمات"
+    },
+    "fillBlanksQuestion": {
+      "en": "Fill in the blanks question",
+      "fr": "Question de remplissage des blancs",
+      "ar": "سؤال ملء الفراغات"
+    },
+    "yourAnswer": {
+      "en": "Your answer",
+      "fr": "Votre réponse",
+      "ar": "إجابتك"
+    },
+    "noOptionChosen": {
+      "en": "No option chosen",
+      "fr": "Aucune option choisie",
+      "ar": "لم يتم اختيار أي خيار"
+    }
+  },
+  "buttons": {
+    "dropHere": {
+      "en": "Drop here",
+      "fr": "Déposez ici",
+      "ar": "اسحب هنا"
+    },
+    "exitQuiz": {
+      "en": "Exit Quiz",
+      "fr": "Quitter le quiz",
+      "ar": "الخروج من الاختبار"
+    },
+    "continueQuiz": {
+      "en": "Continue",
+      "fr": "Continuer",
+      "ar": "متابعة"
+    },
+    "startQuiz": {
+      "en": "Start",
+      "fr": "Démarrer",
+      "ar": "بدء"
+    },
+    "finishQuiz": {
+      "en": "Finish",
+      "fr": "Terminer",
+      "ar": "إنهاء"
+    },
+    "nextQuestion": {
+      "en": "Next Question",
+      "fr": "Question suivante",
+      "ar": "السؤال التالي"
+    },
+    "previewQuestion": {
+      "en": "Preview question",
+      "fr": "Question de prévisualisation",
+      "ar": "معاينة السؤال"
+    },
+    "quitQuiz": {
+      "en": "Quit Quiz",
+      "fr": "Quitter le quiz",
+      "ar": "الخروج من الاختبار"
+    },
+    "replayQuiz": {
+      "en": "Replay Quiz",
+      "fr": "Rejouer au quiz",
+      "ar": "إعادة الاختبار"
+    },
+    "validate": {
+      "en": "Validate",
+      "fr": "Valider",
+      "ar": "التحقق"
+    }
+  }
+}
