@@ -372,6 +372,7 @@
               </div>
             </ng-container>
           </section>
+
           <footer [ngClass]="{ 'start-buttons': showWarning || isQuizEnded}" *ngIf="!(isQuizEnded && !isMiniQuiz)"
             [@slideDownUp]>
             <ng-container *ngIf="showWarning">
@@ -393,13 +394,12 @@
                 </span>
               </div>
               <div class="flex">
-
                 <!--<button class="exit_btn rounded mx-4" (click)="stop()" [@fadeInOut]>{{
                   content.buttons.quitQuiz[this.currentLanguage] }}</button>-->
 
                 <ng-container *ngIf="currentQuestionNo !== 0">
-                  <button class="next_btn rounded mx-4" (click)="previewQuestion()" [@fadeInOut]>{{
-                    content.buttons.previewQuestion[this.currentLanguage] }}</button>
+                  <button class="next_btn rounded mx-4" (click)="previewQuestion()" [@fadeInOut]>
+                    {{ content.buttons.previewQuestion[this.currentLanguage] }}</button>
                 </ng-container>
 
                 <button *ngIf="(isMiniQuiz && !questionsList[this.currentQuestionNo].isValidate)"
@@ -411,26 +411,27 @@
                   <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].isValidate) 
                                 || !isMiniQuiz" class="next_btn rounded" [disabled]="!isAnswered()"
                     (click)="nextQuestion()" [@fadeInOut]>
-                    {{ content.buttons.nextQuestion[this.currentLanguage] }}</button>
+                    {{ content.buttons.nextQuestion[this.currentLanguage] }}
+                  </button>
                 </ng-container>
-
 
                 <ng-container *ngIf="currentQuestionNo+1 == questionsList.length">
                   <button *ngIf="(isMiniQuiz && questionsList[this.currentQuestionNo].isValidate ) 
                                 || !isMiniQuiz " class="next_btn rounded" [disabled]="!isAnswered()"
-                    (click)="validateAndProceed()" [@fadeInOut]>{{
-                    content.buttons.finishQuiz[this.currentLanguage] }}</button>
+                    (click)="validateAndProceed()" [@fadeInOut]>
+                    {{ content.buttons.finishQuiz[this.currentLanguage] }}
+                  </button>
                 </ng-container>
-
               </div>
             </ng-container>
 
             <ng-container *ngIf="isQuizEnded">
               <button class="exit_btn rounded" (click)="exit()" [@fadeInOut]>{{
                 content.buttons.quitQuiz[this.currentLanguage] }}</button>
-              <button *ngIf="isMiniQuiz" class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>{{
+              <button class="next_btn rounded" (click)="ReplayQuiz()" [@fadeInOut]>{{
                 content.buttons.replayQuiz[this.currentLanguage] }}</button>
             </ng-container>
+            
           </footer>
         </mat-card-content>
       </mat-card>

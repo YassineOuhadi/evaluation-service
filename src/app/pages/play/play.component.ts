@@ -6,10 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AppService } from '../../app.service';
 import { ActivatedRoute } from '@angular/router';
-import { map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { Router } from '@angular/router'; import { MatSnackBar } from '@angular/material/snack-bar';
-import { AnimationOptions } from 'ngx-lottie';
+import { Router } from '@angular/router'; 
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import {
   QuestionType,
   Option,
@@ -29,7 +28,7 @@ import {
   animations: [
     trigger('fadeInOut', [
       state('void', style({ opacity: 0 })),
-      transition(':enter, :leave', animate(200)) // Adjust the duration as needed
+      transition(':enter, :leave', animate(200))
     ]),
     trigger('slideDownUp', [
       transition(':enter', [
@@ -68,15 +67,14 @@ export class PlayComponent implements OnInit {
 
   isUserCanTakeExam: boolean = false;
   totalQuestions: number = 0;
-
   score: number = 0;
   isArchived: boolean = false;
 
   constructor(
     private http: HttpClient,
     private elementRef: ElementRef,
-    private apiService: AppService, private snackBar: MatSnackBar,
-
+    private apiService: AppService, 
+    private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router) {
     this.http.get("assets/json/play.json").subscribe((res: any) => {
@@ -391,19 +389,6 @@ export class PlayComponent implements OnInit {
     });
   }
 
-  getCertification(): string {
-    if (this.isMiniQuiz) return '';
-    if (this.isArchived) {
-      if (this.score > 80) {
-        return '/assets/cybersecurity_badges_golde.png';
-      } else {
-        return '/assets/cybersecurity_badges_blue.png';
-      }
-    } else {
-      return '/assets/cybersecurity_badges_red.png';
-    }
-  }
-
   startQuiz() {
     this.isQuizEnded = false;
     this.showWarning = false;
@@ -714,5 +699,18 @@ export class PlayComponent implements OnInit {
         console.error('Error while fetching questions data:', error);
       }
     );
+  }
+
+  getCertification(): string {
+    if (this.isMiniQuiz) return '';
+    if (this.isArchived) {
+      if (this.score > 80) {
+        return '/assets/cybersecurity_badges_golde.png';
+      } else {
+        return '/assets/cybersecurity_badges_blue.png';
+      }
+    } else {
+      return '/assets/cybersecurity_badges_red.png';
+    }
   }
 }
